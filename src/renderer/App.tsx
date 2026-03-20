@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Paperclip, GitCommit, HeadCircuit, MagnifyingGlass, Rocket, ThumbsUp, ListChecks, Lightbulb,
-  FastForward, Robot, Notepad, Brain, Warning, Sparkle, SealCheck, GraduationCap,
+  FastForward, Robot, Notepad, Brain, Warning, Sparkle, SealCheck, GraduationCap, Broom,
 } from '@phosphor-icons/react'
 import { TabStrip } from './components/TabStrip'
 import { ConversationView } from './components/ConversationView'
@@ -270,6 +270,25 @@ export default function App() {
     )
   }, [sendMessage])
 
+  const handleCleanHouse = useCallback(() => {
+    sendMessage(
+      'Do a full project cleanup. Here\'s how:\n\n' +
+      '1. Read the entire project structure — every file, every folder\n' +
+      '2. Check what\'s actually imported and used vs what\'s just sitting there:\n' +
+      '   - Old files from a previous framework (HTML files in a Next.js project, old CSS in a Tailwind project, etc.)\n' +
+      '   - Components/pages that nothing imports or links to\n' +
+      '   - Images/assets in public/ that no code references\n' +
+      '   - Config files for tools we\'re not using\n' +
+      '   - node_modules dependencies in package.json that aren\'t imported anywhere\n' +
+      '   - Duplicate files (same component in two places)\n' +
+      '   - Empty files, placeholder files, temp files\n' +
+      '3. For each file you want to delete: verify it\'s truly unused by grepping for its name across the entire codebase\n' +
+      '4. Do NOT delete anything that might be important — .env files, configs, documentation, git files\n' +
+      '5. Delete the confirmed junk, run the build to make sure nothing broke\n\n' +
+      'Show me what you found and what you deleted.'
+    )
+  }, [sendMessage])
+
   const handleSanityCheck = useCallback(() => {
     sendMessage(
       'Stop and double-check yourself before continuing:\n\n' +
@@ -522,27 +541,36 @@ export default function App() {
                 >
                   <Warning size={17} />
                 </button>
-                {/* r-6: Any More Ideas */}
+                {/* r-6: Clean House */}
                 <button
                   className="stack-btn-r stack-btn-r-6 glass-surface"
+                  title="Clean House"
+                  onClick={handleCleanHouse}
+                  disabled={isRunning}
+                >
+                  <Broom size={17} />
+                </button>
+                {/* r-7: Any More Ideas */}
+                <button
+                  className="stack-btn-r stack-btn-r-7 glass-surface"
                   title="Any More Ideas?"
                   onClick={handleAnyMoreIdeas}
                   disabled={isRunning}
                 >
                   <Sparkle size={17} />
                 </button>
-                {/* r-7: Prove It */}
+                {/* r-8: Prove It */}
                 <button
-                  className="stack-btn-r stack-btn-r-7 glass-surface"
+                  className="stack-btn-r stack-btn-r-8 glass-surface"
                   title="Prove It"
                   onClick={handleProveIt}
                   disabled={isRunning}
                 >
                   <SealCheck size={17} />
                 </button>
-                {/* r-8: Teach Me */}
+                {/* r-9: Teach Me */}
                 <button
-                  className="stack-btn-r stack-btn-r-8 glass-surface"
+                  className="stack-btn-r stack-btn-r-9 glass-surface"
                   title="Teach Me"
                   onClick={handleTeachMe}
                   disabled={isRunning}
