@@ -196,15 +196,15 @@ input::placeholder {
 .stack-btn-7 { right: 156px; z-index: 2; }
 .stack-btn-8 { right: 182px; z-index: 1; }
 
-/* Expanded on hover: spread evenly */
+/* Expanded on hover: tight spacing (2px gap between buttons) */
 .btn-stack:hover .stack-btn-1 { right: 0; }
-.btn-stack:hover .stack-btn-2 { right: 50px; }
-.btn-stack:hover .stack-btn-3 { right: 100px; }
-.btn-stack:hover .stack-btn-4 { right: 150px; }
-.btn-stack:hover .stack-btn-5 { right: 200px; }
-.btn-stack:hover .stack-btn-6 { right: 250px; }
-.btn-stack:hover .stack-btn-7 { right: 300px; }
-.btn-stack:hover .stack-btn-8 { right: 350px; }
+.btn-stack:hover .stack-btn-2 { right: 48px; }
+.btn-stack:hover .stack-btn-3 { right: 96px; }
+.btn-stack:hover .stack-btn-4 { right: 144px; }
+.btn-stack:hover .stack-btn-5 { right: 192px; }
+.btn-stack:hover .stack-btn-6 { right: 240px; }
+.btn-stack:hover .stack-btn-7 { right: 288px; }
+.btn-stack:hover .stack-btn-8 { right: 336px; }
 
 /* ─── Drag region for frameless window ─── */
 .drag-region {
