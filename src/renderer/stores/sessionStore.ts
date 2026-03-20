@@ -1003,3 +1003,23 @@ export const useSessionStore = create<State>((set, get) => ({
     }))
   },
 }))
+
+// ─── Auto-persist tabs on any change (debounced to avoid flooding during streaming) ───
+let _saveTimer: ReturnType<typeof setTimeout> | null = null
+useSessionStore.subscribe((state, prevState) => {
+  if (state.tabs !== prevState.tabs || state.activeTabId !== prevState.activeTabId) {
+    if (_saveTimer) clearTimeout(_saveTimer)
+    _saveTimer = setTimeout(() => {
+      saveTabs(state.tabs, state.activeTabId)
+    }, 500)
+  }
+})
+
+// Immediate flush on window close — catches Cmd+Q and other exit paths
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeunload', () => {
+    if (_saveTimer) clearTimeout(_saveTimer)
+    const { tabs, activeTabId } = useSessionStore.getState()
+    saveTabs(tabs, activeTabId)
+  })
+}
