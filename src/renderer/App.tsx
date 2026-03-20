@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Paperclip, GitCommit, HeadCircuit, MagnifyingGlass, Rocket, ThumbsUp, ListChecks, Lightbulb,
-  FastForward, Robot, Notepad, Brain, Warning, Sparkle,
+  FastForward, Robot, Notepad, Brain, Warning, Sparkle, SealCheck,
 } from '@phosphor-icons/react'
 import { TabStrip } from './components/TabStrip'
 import { ConversationView } from './components/ConversationView'
@@ -247,6 +247,17 @@ export default function App() {
     sendMessage(
       'What else you got? Look at everything we\'ve done so far and tell me what else you\'d do if you had free rein. ' +
       'Don\'t repeat anything we already covered — only new ideas. Push it further.'
+    )
+  }, [sendMessage])
+
+  const handleProveIt = useCallback(() => {
+    sendMessage(
+      'Prove it. For every major decision you made — design choices, architecture, copy, layout, features — show me where you got the idea:\n\n' +
+      '1. WebSearch for award-winning sites, top-rated competitors, or industry leaders that do what you did (or what you should have done)\n' +
+      '2. WebFetch the best ones and show me specifically what they do and how our approach compares\n' +
+      '3. For each decision: what was your reasoning, what\'s the evidence it works, and is there a better approach you missed?\n' +
+      '4. If you find something better than what you built, say so and show me what to change\n\n' +
+      'No hand-waving. Links, examples, and evidence for everything.'
     )
   }, [sendMessage])
 
@@ -510,6 +521,15 @@ export default function App() {
                   disabled={isRunning}
                 >
                   <Sparkle size={17} />
+                </button>
+                {/* r-7: Prove It */}
+                <button
+                  className="stack-btn-r stack-btn-r-7 glass-surface"
+                  title="Prove It"
+                  onClick={handleProveIt}
+                  disabled={isRunning}
+                >
+                  <SealCheck size={17} />
                 </button>
               </div>
             </div>
