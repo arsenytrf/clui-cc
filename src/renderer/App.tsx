@@ -170,11 +170,29 @@ export default function App() {
   }, [sendMessage])
 
   const handleFixErrors = useCallback(() => {
-    sendMessage('Run the build and fix any errors. Check for TypeScript issues, missing imports, broken references, and anything that prevents a clean build.')
+    sendMessage(
+      'Do a full code audit and fix everything:\n' +
+      '1. Run the build — fix all TypeScript errors, type mismatches, and missing imports\n' +
+      '2. Find and remove all unused imports, unused variables, and dead code\n' +
+      '3. Remove any commented-out code blocks, leftover console.logs, and TODO placeholders that were already addressed\n' +
+      '4. Check for unreachable code branches and redundant conditionals\n' +
+      '5. Verify all dependencies in package.json are actually used\n' +
+      '6. Run the build again to confirm everything is clean\n\n' +
+      'Show me a summary of what you found and fixed.'
+    )
   }, [sendMessage])
 
   const handleReviewCode = useCallback(() => {
-    sendMessage('Review the recent changes for code quality, potential bugs, performance issues, and anything you\'d improve. Be specific and actionable.')
+    sendMessage(
+      'Do a thorough code review of this project:\n' +
+      '1. Check every file for unused imports, duplicate logic, and dead code paths\n' +
+      '2. Flag oversized components or files that should be split\n' +
+      '3. Look for hardcoded values that should be constants or environment variables\n' +
+      '4. Check for inconsistent patterns — naming conventions, file structure, code style\n' +
+      '5. Identify any security concerns (exposed keys, unsanitized input, XSS vectors)\n' +
+      '6. Note performance issues (unnecessary re-renders, missing memoization, large bundles)\n\n' +
+      'Be specific — file name, line number, and exactly what to change for each issue.'
+    )
   }, [sendMessage])
 
   const handleExplain = useCallback(() => {
@@ -182,7 +200,16 @@ export default function App() {
   }, [sendMessage])
 
   const handleCleanUp = useCallback(() => {
-    sendMessage('Clean up and simplify the code. Remove dead code, unnecessary complexity, redundant logic, and anything that doesn\'t need to be there. Keep it lean.')
+    sendMessage(
+      'Do a thorough cleanup pass on the codebase:\n' +
+      '1. Remove ALL unused imports and variables across every file\n' +
+      '2. Delete dead code, commented-out blocks, and stale TODO comments\n' +
+      '3. Consolidate duplicate logic into shared utilities where it makes sense\n' +
+      '4. Simplify overly complex conditionals and nested ternaries\n' +
+      '5. Ensure consistent formatting, naming conventions, and file organization\n' +
+      '6. Run the build after to confirm nothing broke\n\n' +
+      'Keep it lean — if it\'s not actively used, it goes.'
+    )
   }, [sendMessage])
 
   const handleWriteTests = useCallback(() => {
@@ -194,7 +221,16 @@ export default function App() {
   }, [sendMessage])
 
   const handleDeploy = useCallback(() => {
-    sendMessage('Help me deploy this project. Walk me through the steps, check the config, and make sure everything is production-ready.')
+    sendMessage(
+      'Help me deploy this Next.js project to Cloudflare:\n' +
+      '1. Check if this needs Cloudflare Pages or Workers — inspect for server-side features (API routes, SSR, middleware)\n' +
+      '2. Set up or verify wrangler.toml / wrangler.jsonc config\n' +
+      '3. Configure R2 bucket if the project uses file storage or static assets that need a CDN\n' +
+      '4. Set up environment variables and secrets (list exactly what needs to be configured)\n' +
+      '5. Check the build output is compatible — fix any Node.js APIs that don\'t work in Workers runtime\n' +
+      '6. Give me the exact deployment commands to run\n\n' +
+      'Make sure everything is production-ready before we deploy.'
+    )
   }, [sendMessage])
 
   const handleAttachFile = useCallback(async () => {
