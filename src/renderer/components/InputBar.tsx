@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Microphone, ArrowUp, SpinnerGap, X, Check } from '@phosphor-icons/react'
+import { ClipboardText, ArrowUp } from '@phosphor-icons/react'
 import { useSessionStore, AVAILABLE_MODELS } from '../stores/sessionStore'
 import { AttachmentChips } from './AttachmentChips'
 import { SlashCommandMenu, getFilteredCommandsWithExtras, type SlashCommand } from './SlashCommandMenu'
@@ -12,24 +12,18 @@ const MULTILINE_ENTER_HEIGHT = 52
 const MULTILINE_EXIT_HEIGHT = 50
 const INLINE_CONTROLS_RESERVED_WIDTH = 104
 
-type VoiceState = 'idle' | 'recording' | 'transcribing'
-
 /**
  * InputBar renders inside a glass-surface rounded-full pill provided by App.tsx.
- * It provides: textarea + mic/send buttons. Attachment chips render above when present.
+ * It provides: textarea + clipboard inject/send buttons. Attachment chips render above when present.
  */
 export function InputBar() {
   const [input, setInput] = useState('')
-  const [voiceState, setVoiceState] = useState<VoiceState>('idle')
-  const [voiceError, setVoiceError] = useState<string | null>(null)
   const [slashFilter, setSlashFilter] = useState<string | null>(null)
   const [slashIndex, setSlashIndex] = useState(0)
   const [isMultiLine, setIsMultiLine] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
   const measureRef = useRef<HTMLTextAreaElement | null>(null)
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
-  const chunksRef = useRef<Blob[]>([])
 
   const sendMessage = useSessionStore((s) => s.sendMessage)
   const clearTab = useSessionStore((s) => s.clearTab)
@@ -136,9 +130,6 @@ export function InputBar() {
 
   useEffect(() => {
     return () => {
-      if (mediaRecorderRef.current?.state === 'recording') {
-        mediaRecorderRef.current.stop()
-      }
       if (measureRef.current) {
         measureRef.current.remove()
         measureRef.current = null
@@ -322,56 +313,19 @@ export function InputBar() {
     }
   }, [addAttachments])
 
-  // ─── Voice ───
-  const cancelledRef = useRef(false)
-
-  const stopRecording = useCallback(() => {
-    cancelledRef.current = false
-    if (mediaRecorderRef.current?.state === 'recording') mediaRecorderRef.current.stop()
-  }, [])
-
-  const cancelRecording = useCallback(() => {
-    cancelledRef.current = true
-    if (mediaRecorderRef.current?.state === 'recording') mediaRecorderRef.current.stop()
-  }, [])
-
-  const startRecording = useCallback(async () => {
-    setVoiceError(null)
-    chunksRef.current = []
-    let stream: MediaStream
+  // ─── Clipboard inject ───
+  const handleClipboardInject = useCallback(async () => {
     try {
-      stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-    } catch {
-      setVoiceError('Microphone permission denied.')
-      return
-    }
-    const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm'
-    const recorder = new MediaRecorder(stream, { mimeType })
-    recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data) }
-    recorder.onstop = async () => {
-      stream.getTracks().forEach((t) => t.stop())
-      if (cancelledRef.current) { cancelledRef.current = false; setVoiceState('idle'); return }
-      if (chunksRef.current.length === 0) { setVoiceState('idle'); return }
-      setVoiceState('transcribing')
-      try {
-        const blob = new Blob(chunksRef.current, { type: mimeType })
-        const wavBase64 = await blobToWavBase64(blob)
-        const result = await window.clui.transcribeAudio(wavBase64)
-        if (result.error) setVoiceError(result.error)
-        else if (result.transcript) setInput((prev) => (prev ? `${prev} ${result.transcript}` : result.transcript!))
-      } catch (err: any) { setVoiceError(`Voice failed: ${err.message}`) }
-      finally { setVoiceState('idle') }
-    }
-    recorder.onerror = () => { stream.getTracks().forEach((t) => t.stop()); setVoiceError('Recording failed.'); setVoiceState('idle') }
-    mediaRecorderRef.current = recorder
-    setVoiceState('recording')
-    recorder.start()
+      const text = await navigator.clipboard.readText()
+      if (!text) return
+      setInput((prev) => {
+        if (!prev) return text
+        // Insert at end with a newline separator
+        return prev.endsWith('\n') ? prev + text : prev + '\n' + text
+      })
+      requestAnimationFrame(() => textareaRef.current?.focus())
+    } catch {}
   }, [])
-
-  const handleVoiceToggle = useCallback(() => {
-    if (voiceState === 'recording') stopRecording()
-    else if (voiceState === 'idle') void startRecording()
-  }, [voiceState, startRecording, stopRecording])
 
   const hasAttachments = attachments.length > 0
 
@@ -410,13 +364,9 @@ export function InputBar() {
               placeholder={
                 isConnecting
                   ? 'Initializing...'
-                  : voiceState === 'recording'
-                    ? 'Recording... ✓ to confirm, ✕ to cancel'
-                    : voiceState === 'transcribing'
-                      ? 'Transcribing...'
-                      : isBusy
-                        ? 'Type to queue a message...'
-                        : 'Ask Claude Code anything...'
+                  : isBusy
+                    ? 'Type to queue a message...'
+                    : 'Ask Claude Code anything...'
               }
               rows={1}
               className="w-full bg-transparent resize-none"
@@ -432,16 +382,21 @@ export function InputBar() {
             />
 
             <div className="flex items-center justify-end gap-1" style={{ marginTop: 0, paddingBottom: 4 }}>
-              <VoiceButtons
-                voiceState={voiceState}
-                isConnecting={isConnecting}
-                colors={colors}
-                onToggle={handleVoiceToggle}
-                onCancel={cancelRecording}
-                onStop={stopRecording}
-              />
+              <button
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={handleClipboardInject}
+                disabled={isConnecting}
+                className="w-9 h-9 rounded-full flex items-center justify-center transition-colors"
+                style={{
+                  background: colors.micBg,
+                  color: isConnecting ? colors.micDisabled : colors.micColor,
+                }}
+                title="Paste clipboard"
+              >
+                <ClipboardText size={16} />
+              </button>
               <AnimatePresence>
-                {canSend && voiceState !== 'recording' && (
+                {canSend && (
                   <motion.div key="send" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.1 }}>
                     <button
                       onMouseDown={(e) => e.preventDefault()}
@@ -468,13 +423,9 @@ export function InputBar() {
               placeholder={
                 isConnecting
                   ? 'Initializing...'
-                  : voiceState === 'recording'
-                    ? 'Recording... ✓ to confirm, ✕ to cancel'
-                    : voiceState === 'transcribing'
-                      ? 'Transcribing...'
-                      : isBusy
-                        ? 'Type to queue a message...'
-                        : 'Ask Claude Code anything...'
+                  : isBusy
+                    ? 'Type to queue a message...'
+                    : 'Ask Claude Code anything...'
               }
               rows={1}
               className="flex-1 bg-transparent resize-none"
@@ -490,16 +441,21 @@ export function InputBar() {
             />
 
             <div className="flex items-center gap-1 shrink-0 ml-2">
-              <VoiceButtons
-                voiceState={voiceState}
-                isConnecting={isConnecting}
-                colors={colors}
-                onToggle={handleVoiceToggle}
-                onCancel={cancelRecording}
-                onStop={stopRecording}
-              />
+              <button
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={handleClipboardInject}
+                disabled={isConnecting}
+                className="w-9 h-9 rounded-full flex items-center justify-center transition-colors"
+                style={{
+                  background: colors.micBg,
+                  color: isConnecting ? colors.micDisabled : colors.micColor,
+                }}
+                title="Paste clipboard"
+              >
+                <ClipboardText size={16} />
+              </button>
               <AnimatePresence>
-                {canSend && voiceState !== 'recording' && (
+                {canSend && (
                   <motion.div key="send" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.1 }}>
                     <button
                       onMouseDown={(e) => e.preventDefault()}
@@ -518,188 +474,6 @@ export function InputBar() {
         )}
       </div>
 
-      {/* Voice error */}
-      {voiceError && (
-        <div className="px-1 pb-2 text-[11px]" style={{ color: colors.statusError }}>
-          {voiceError}
-        </div>
-      )}
     </div>
   )
-}
-
-// ─── Voice Buttons (extracted to avoid duplication) ───
-
-function VoiceButtons({ voiceState, isConnecting, colors, onToggle, onCancel, onStop }: {
-  voiceState: VoiceState
-  isConnecting: boolean
-  colors: ReturnType<typeof useColors>
-  onToggle: () => void
-  onCancel: () => void
-  onStop: () => void
-}) {
-  return (
-    <AnimatePresence mode="wait">
-      {voiceState === 'recording' ? (
-        <motion.div
-          key="voice-controls"
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          transition={{ duration: 0.12 }}
-          className="flex items-center gap-1"
-        >
-          <button
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={onCancel}
-            className="w-9 h-9 rounded-full flex items-center justify-center transition-colors"
-            style={{ background: colors.surfaceHover, color: colors.textTertiary }}
-            title="Cancel recording"
-          >
-            <X size={15} weight="bold" />
-          </button>
-          <button
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={onStop}
-            className="w-9 h-9 rounded-full flex items-center justify-center transition-colors"
-            style={{ background: colors.accent, color: colors.textOnAccent }}
-            title="Confirm recording"
-          >
-            <Check size={15} weight="bold" />
-          </button>
-        </motion.div>
-      ) : voiceState === 'transcribing' ? (
-        <motion.div key="transcribing" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.1 }}>
-          <button
-            disabled
-            className="w-9 h-9 rounded-full flex items-center justify-center"
-            style={{ background: colors.micBg, color: colors.micColor }}
-          >
-            <SpinnerGap size={16} className="animate-spin" />
-          </button>
-        </motion.div>
-      ) : (
-        <motion.div key="mic" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.1 }}>
-          <button
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={onToggle}
-            disabled={isConnecting}
-            className="w-9 h-9 rounded-full flex items-center justify-center transition-colors"
-            style={{
-              background: colors.micBg,
-              color: isConnecting ? colors.micDisabled : colors.micColor,
-            }}
-            title="Voice input"
-          >
-            <Microphone size={16} />
-          </button>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  )
-}
-
-// ─── Audio conversion: WebM blob → WAV base64 ───
-
-async function blobToWavBase64(blob: Blob): Promise<string> {
-  const arrayBuffer = await blob.arrayBuffer()
-  const audioCtx = new AudioContext()
-  const decoded = await audioCtx.decodeAudioData(arrayBuffer)
-  audioCtx.close()
-  const mono = mixToMono(decoded)
-  const inputRms = rmsLevel(mono)
-  if (inputRms < 0.003) {
-    throw new Error('No voice detected. Check microphone permission and speak closer to the mic.')
-  }
-  const resampled = resampleLinear(mono, decoded.sampleRate, 16000)
-  const normalized = normalizePcm(resampled)
-  const wavBuffer = encodeWav(normalized, 16000)
-  return bufferToBase64(wavBuffer)
-}
-
-function mixToMono(buffer: AudioBuffer): Float32Array {
-  const { numberOfChannels, length } = buffer
-  if (numberOfChannels <= 1) return buffer.getChannelData(0)
-
-  const mono = new Float32Array(length)
-  for (let ch = 0; ch < numberOfChannels; ch++) {
-    const channel = buffer.getChannelData(ch)
-    for (let i = 0; i < length; i++) mono[i] += channel[i]
-  }
-  const inv = 1 / numberOfChannels
-  for (let i = 0; i < length; i++) mono[i] *= inv
-  return mono
-}
-
-function resampleLinear(input: Float32Array, inRate: number, outRate: number): Float32Array {
-  if (inRate === outRate) return input
-  const ratio = inRate / outRate
-  const outLength = Math.max(1, Math.floor(input.length / ratio))
-  const output = new Float32Array(outLength)
-  for (let i = 0; i < outLength; i++) {
-    const pos = i * ratio
-    const i0 = Math.floor(pos)
-    const i1 = Math.min(i0 + 1, input.length - 1)
-    const t = pos - i0
-    output[i] = input[i0] * (1 - t) + input[i1] * t
-  }
-  return output
-}
-
-function normalizePcm(samples: Float32Array): Float32Array {
-  let peak = 0
-  for (let i = 0; i < samples.length; i++) {
-    const a = Math.abs(samples[i])
-    if (a > peak) peak = a
-  }
-  if (peak < 1e-4 || peak > 0.95) return samples
-
-  const gain = Math.min(0.95 / peak, 8)
-  const out = new Float32Array(samples.length)
-  for (let i = 0; i < samples.length; i++) out[i] = samples[i] * gain
-  return out
-}
-
-function rmsLevel(samples: Float32Array): number {
-  if (samples.length === 0) return 0
-  let sumSq = 0
-  for (let i = 0; i < samples.length; i++) sumSq += samples[i] * samples[i]
-  return Math.sqrt(sumSq / samples.length)
-}
-
-function encodeWav(samples: Float32Array, sampleRate: number): ArrayBuffer {
-  const numSamples = samples.length
-  const buffer = new ArrayBuffer(44 + numSamples * 2)
-  const view = new DataView(buffer)
-  writeString(view, 0, 'RIFF')
-  view.setUint32(4, 36 + numSamples * 2, true)
-  writeString(view, 8, 'WAVE')
-  writeString(view, 12, 'fmt ')
-  view.setUint32(16, 16, true)
-  view.setUint16(20, 1, true)
-  view.setUint16(22, 1, true)
-  view.setUint32(24, sampleRate, true)
-  view.setUint32(28, sampleRate * 2, true)
-  view.setUint16(32, 2, true)
-  view.setUint16(34, 16, true)
-  writeString(view, 36, 'data')
-  view.setUint32(40, numSamples * 2, true)
-  let offset = 44
-  for (let i = 0; i < numSamples; i++) {
-    const s = Math.max(-1, Math.min(1, samples[i]))
-    view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true)
-    offset += 2
-  }
-  return buffer
-}
-
-function writeString(view: DataView, offset: number, str: string) {
-  for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i))
-}
-
-function bufferToBase64(buffer: ArrayBuffer): string {
-  const bytes = new Uint8Array(buffer)
-  let binary = ''
-  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i])
-  return btoa(binary)
 }
