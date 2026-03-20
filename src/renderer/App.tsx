@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Paperclip, GitCommit, HeadCircuit, MagnifyingGlass, Rocket, ThumbsUp, ListChecks, Lightbulb,
-  FastForward, Robot, Notepad, Brain, Warning, Sparkle, SealCheck,
+  FastForward, Robot, Notepad, Brain, Warning, Sparkle, SealCheck, GraduationCap,
 } from '@phosphor-icons/react'
 import { TabStrip } from './components/TabStrip'
 import { ConversationView } from './components/ConversationView'
@@ -256,6 +256,17 @@ export default function App() {
       '3. For each decision: what was your reasoning, what\'s the evidence it works, and is there a better approach you missed?\n' +
       '4. If you find something better than what you built, say so and show me what to change\n\n' +
       'No hand-waving. Links, examples, and evidence for everything.'
+    )
+  }, [sendMessage])
+
+  const handleTeachMe = useCallback(() => {
+    sendMessage(
+      'I want to understand the WHY behind what you just did — not a code walkthrough, but the actual knowledge:\n\n' +
+      '- What concept or principle drove this decision?\n' +
+      '- What are the tradeoffs? What did we gain and what did we give up?\n' +
+      '- When would this approach be wrong? What would you do differently in that case?\n' +
+      '- Is there a mental model or framework I should know that makes this click?\n\n' +
+      'Explain it like I\'m smart but don\'t know this specific domain. Make me understand it well enough to make the call myself next time.'
     )
   }, [sendMessage])
 
@@ -528,6 +539,15 @@ export default function App() {
                   disabled={isRunning}
                 >
                   <SealCheck size={17} />
+                </button>
+                {/* r-8: Teach Me */}
+                <button
+                  className="stack-btn-r stack-btn-r-8 glass-surface"
+                  title="Teach Me"
+                  onClick={handleTeachMe}
+                  disabled={isRunning}
+                >
+                  <GraduationCap size={17} />
                 </button>
               </div>
             </div>
