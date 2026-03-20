@@ -53,13 +53,14 @@ function ModelPicker() {
   }
 
   const activeLabel = (() => {
+    // Match model ID with or without context suffix (e.g. "claude-opus-4-6[1m]" → "claude-opus-4-6")
+    const matchModel = (id: string) =>
+      AVAILABLE_MODELS.find((m) => id === m.id || id.startsWith(m.id + '['))
     if (preferredModel) {
-      const m = AVAILABLE_MODELS.find((m) => m.id === preferredModel)
-      return m?.label || preferredModel
+      return matchModel(preferredModel)?.label || preferredModel
     }
     if (tab?.sessionModel) {
-      const m = AVAILABLE_MODELS.find((m) => m.id === tab.sessionModel)
-      return m?.label || tab.sessionModel
+      return matchModel(tab.sessionModel)?.label || tab.sessionModel
     }
     return AVAILABLE_MODELS[0].label
   })()
