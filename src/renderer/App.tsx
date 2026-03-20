@@ -167,52 +167,45 @@ export default function App() {
 
   const handleAgentBlueprint = useCallback(() => {
     sendMessage(
-      'I need a browser agent prompt I can copy-paste into Claude Computer Use.\n\n' +
-      'PHASE 1 — DISCOVER:\n' +
-      'Read the codebase. Identify every task that requires manual browser action — SEO submissions, DNS config, analytics setup, form backends, directory listings, content uploads, API key creation, social profiles. Check every config file, env reference, and third-party integration.\n\n' +
-      'PHASE 2 — RESEARCH:\n' +
-      'For each task you found, WebSearch the exact current procedure (UIs change frequently). Find the starting URL, the current step-by-step flow, and whether there are bulk/API shortcuts.\n\n' +
-      'PHASE 3 — BUILD THE PROMPT:\n' +
-      'Write the prompt using this exact structure (Anthropic\'s recommended format for Computer Use):\n\n' +
-      '```xml\n' +
-      '<task>\n' +
-      'One sentence: what you\'re doing and where.\n' +
-      '</task>\n\n' +
-      '<context>\n' +
-      'Business info, credentials, URLs — only what the agent needs.\n' +
-      '</context>\n\n' +
+      'Read this project. Then build me browser agent prompts for Claude Computer Use.\n\n' +
+      'HOW TO THINK ABOUT THIS:\n' +
+      'Computer Use takes screenshots, reasons about what it sees, then acts. It\'s smart — it can figure out buttons and forms from screenshots. Your job is to tell it WHAT to accomplish and WHAT DATA to enter, not HOW to click things.\n\n' +
+      'STEP 1 — Read the project. Find every task that needs a browser:\n' +
+      'Check package.json, .env, config files, README, deployment configs. Look for references to external services — analytics, DNS, forms, search engines, CDN, email, social, APIs.\n\n' +
+      'STEP 2 — For each task, WebSearch the current procedure. UIs change. Find the real starting URL and current flow.\n\n' +
+      'STEP 3 — Write one prompt per task using this formula:\n\n' +
+      '```\n' +
+      '<task> One sentence: what + where </task>\n' +
+      '<context> Business name, URLs, credentials, data the agent needs </context>\n' +
       '<steps>\n' +
-      'Numbered sequential steps. Each step must:\n' +
-      '- State what to ACCOMPLISH (not what pixel to click)\n' +
-      '- Include exact text to type in form fields\n' +
-      '- Use keyboard shortcuts for dropdowns/date pickers (Tab, Enter, arrows — more reliable than mouse)\n' +
-      '- End critical steps with "Take a screenshot to verify this worked"\n' +
-      '- Include error handling: "If you see X instead, do Y"\n' +
-      '- One task flow at a time — complete one thing before starting the next\n' +
-      '</steps>\n\n' +
-      '<done>\n' +
-      'What the screen should look like when complete.\n' +
-      '</done>\n' +
+      '1. Go to [URL]\n' +
+      '2. [What to accomplish] — enter "[exact text]"\n' +
+      '3. Verify: you should see [what success looks like]\n' +
+      '4. If [error/unexpected screen], then [recovery action]\n' +
+      '...\n' +
+      '</steps>\n' +
+      '<done> What the screen looks like when finished </done>\n' +
       '```\n\n' +
-      'RULES:\n' +
-      '- Keep each prompt under 500 words (longer = agent loses focus and skips steps)\n' +
-      '- If there are multiple unrelated tasks, output separate prompts for each\n' +
-      '- Include the actual data to enter (exact titles, URLs, descriptions) — don\'t leave blanks\n' +
-      '- Verification checkpoints after every critical action\n\n' +
-      'Output each prompt in a code block I can copy directly.'
+      'WHAT MAKES A GOOD STEP:\n' +
+      '- Good: "Submit the sitemap URL https://example.com/sitemap.xml"\n' +
+      '- Bad: "Click the third button from the left"\n' +
+      '- Good: "Verify: you should see a green confirmation banner"\n' +
+      '- Bad: "It should work"\n\n' +
+      'RULES: One task per prompt. Under 500 words. Include real data — no blanks. Output in code blocks I can copy.'
     )
   }, [sendMessage])
 
   const handleMakeItHappen = useCallback(() => {
     sendMessage(
-      'Look at what you just recommended or listed. Take every action item that requires a browser and convert each one into a browser agent prompt using this format:\n\n' +
-      '```xml\n' +
-      '<task>What you\'re doing and where</task>\n' +
-      '<context>Any info the agent needs</context>\n' +
-      '<steps>Numbered steps with exact URLs, exact text to type, keyboard shortcuts for forms, screenshot verification after critical steps</steps>\n' +
-      '<done>What the screen should look like when complete</done>\n' +
+      'Take everything you just recommended and turn each browser task into an executable prompt for Claude Computer Use.\n\n' +
+      'For each task, use this formula:\n' +
+      '```\n' +
+      '<task> What + where </task>\n' +
+      '<context> Data the agent needs </context>\n' +
+      '<steps> Numbered goals with exact data to enter + verification after critical steps + error recovery </steps>\n' +
+      '<done> What success looks like </done>\n' +
       '```\n\n' +
-      'One prompt per task. Under 500 words each. Include the actual data — don\'t leave blanks. Output each in a code block I can copy directly into Claude Computer Use.'
+      'Tell the agent WHAT to accomplish, not how to click. Include the real data. One prompt per task. Under 500 words each. Code blocks I can copy.'
     )
   }, [sendMessage])
 
