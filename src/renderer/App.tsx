@@ -221,25 +221,23 @@ export default function App() {
 
   const handleThinkForMe = useCallback(() => {
     sendMessage(
-      'Think for me. Use this reasoning loop — go through it completely before responding:\n\n' +
-      'OBSERVE:\n' +
-      '- Read the project files. Understand what exists, what\'s built, who it\'s for.\n' +
-      '- Run the build. Note any errors, warnings, or failing paths.\n' +
-      '- Check git status — what\'s changed, what\'s uncommitted, what\'s stale.\n\n' +
-      'RESEARCH:\n' +
-      '- WebSearch for how real users in this space talk about their problems — Reddit, forums, reviews, Twitter. Collect their exact words.\n' +
-      '- WebSearch for what the best products in this category do that this project doesn\'t. Find specific features, patterns, and approaches.\n' +
-      '- WebSearch for known issues with the tech stack we\'re using — recent breaking changes, deprecations, better alternatives.\n\n' +
-      'REASON:\n' +
-      '- What\'s the biggest gap between where this project is and where it should be?\n' +
-      '- What\'s broken or half-done that\'s blocking quality?\n' +
-      '- What would a senior engineer do next if they inherited this codebase?\n' +
-      '- What would the end user notice first as wrong or missing?\n\n' +
-      'ACT:\n' +
-      '- Give me a prioritized list of the highest-impact actions, with your reasoning for each.\n' +
-      '- For each action: what specifically to do, why it matters, and how much effort it takes.\n' +
-      '- If you can fix something right now without my input, just do it.\n\n' +
-      'Don\'t ask me questions. Don\'t hedge. Think, research, reason, act.'
+      'Think for me. Follow this exact loop:\n\n' +
+      'STEP 1 — OBSERVE:\n' +
+      'Read package.json, the main source files, and any config. Identify: what is this project? Who uses it? What industry/niche is it in? What tech stack?\n\n' +
+      'STEP 2 — RESEARCH (be precise with queries):\n' +
+      'Based on what you found in Step 1, craft SPECIFIC search queries. Do NOT search generic terms.\n' +
+      '- Bad: "common website problems" / "user experience issues"\n' +
+      '- Good: "[exact product type] complaints reddit 2025" / "[exact industry] customers what they wish [product type] had"\n\n' +
+      'Search for:\n' +
+      'a) Real user pain points: "[project niche] frustrations reddit" / "[industry] customers what they want site:reddit.com"\n' +
+      'b) Feature ideas: "[closest competitor name] vs [alternative] features" / "best [product type] features 2026"\n' +
+      'c) Stack issues: "[exact framework + version] known issues" / "[exact library name] breaking changes 2026"\n\n' +
+      'STEP 3 — REASON:\n' +
+      'Connect what real users are saying to what this project is missing. What would make a user say "finally, someone gets it"?\n\n' +
+      'STEP 4 — ACT:\n' +
+      'Give me a prioritized list. For each item: what to do, why it matters (with evidence from your research), and effort level.\n' +
+      'If you can fix something right now, just do it.\n\n' +
+      'Don\'t ask me questions. Show your search queries and what you found.'
     )
   }, [sendMessage])
 
