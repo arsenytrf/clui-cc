@@ -94,12 +94,13 @@ export function HistoryPicker() {
     const title = session.firstMessage
       ? (session.firstMessage.length > 30 ? session.firstMessage.substring(0, 27) + '...' : session.firstMessage)
       : session.slug || 'Resumed'
-    void resumeSession(session.sessionId, title, effectiveProjectPath)
+    // Use the session's own project path so it resumes in the right directory
+    void resumeSession(session.sessionId, title, session.projectPath || effectiveProjectPath)
   }
 
   const handleDelete = async (e: React.MouseEvent, session: SessionMeta) => {
     e.stopPropagation()
-    await window.clui.deleteSession(session.sessionId, effectiveProjectPath)
+    await window.clui.deleteSession(session.sessionId, session.projectPath || effectiveProjectPath)
     setSessions((prev) => prev.filter((s) => s.sessionId !== session.sessionId))
   }
 

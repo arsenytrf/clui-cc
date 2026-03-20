@@ -266,6 +266,7 @@ export interface SessionMeta {
   firstMessage: string | null
   lastTimestamp: string
   size: number
+  projectPath?: string
 }
 
 export interface SessionLoadMessage {
