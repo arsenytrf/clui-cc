@@ -221,12 +221,25 @@ export default function App() {
 
   const handleThinkForMe = useCallback(() => {
     sendMessage(
-      'I need you to think for me right now. Here\'s what to do:\n\n' +
-      '1. Read the entire project — understand what it is, who it\'s for, and where it\'s at\n' +
-      '2. WebSearch for what real users and customers in this space actually struggle with — forums, Reddit, reviews, Twitter. Find the real pain points, not assumptions\n' +
-      '3. Look at what\'s missing, what\'s broken, what\'s half-done, and what could be way better\n' +
-      '4. Come back with a prioritized list of the highest-impact things to do next — with your reasoning for each one\n\n' +
-      'Don\'t ask me questions. Don\'t wait for input. Just think, research, and tell me what to do. I trust you.'
+      'Think for me. Use this reasoning loop — go through it completely before responding:\n\n' +
+      'OBSERVE:\n' +
+      '- Read the project files. Understand what exists, what\'s built, who it\'s for.\n' +
+      '- Run the build. Note any errors, warnings, or failing paths.\n' +
+      '- Check git status — what\'s changed, what\'s uncommitted, what\'s stale.\n\n' +
+      'RESEARCH:\n' +
+      '- WebSearch for how real users in this space talk about their problems — Reddit, forums, reviews, Twitter. Collect their exact words.\n' +
+      '- WebSearch for what the best products in this category do that this project doesn\'t. Find specific features, patterns, and approaches.\n' +
+      '- WebSearch for known issues with the tech stack we\'re using — recent breaking changes, deprecations, better alternatives.\n\n' +
+      'REASON:\n' +
+      '- What\'s the biggest gap between where this project is and where it should be?\n' +
+      '- What\'s broken or half-done that\'s blocking quality?\n' +
+      '- What would a senior engineer do next if they inherited this codebase?\n' +
+      '- What would the end user notice first as wrong or missing?\n\n' +
+      'ACT:\n' +
+      '- Give me a prioritized list of the highest-impact actions, with your reasoning for each.\n' +
+      '- For each action: what specifically to do, why it matters, and how much effort it takes.\n' +
+      '- If you can fix something right now without my input, just do it.\n\n' +
+      'Don\'t ask me questions. Don\'t hedge. Think, research, reason, act.'
     )
   }, [sendMessage])
 
