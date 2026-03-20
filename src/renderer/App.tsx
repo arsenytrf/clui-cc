@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Paperclip, GitCommit, HeadCircuit } from '@phosphor-icons/react'
+import { Paperclip, GitCommit, HeadCircuit, MagnifyingGlass } from '@phosphor-icons/react'
 import { TabStrip } from './components/TabStrip'
 import { ConversationView } from './components/ConversationView'
 import { InputBar } from './components/InputBar'
@@ -110,6 +110,22 @@ export default function App() {
 
   const handleCommitPush = useCallback(() => {
     sendMessage('Commit all current changes with a descriptive commit message, then push to the remote repository.')
+  }, [sendMessage])
+
+  const handleProjectRecon = useCallback(() => {
+    sendMessage(
+      'Before we start working, do a full recon of this project:\n\n' +
+      '1. Read the codebase — every directory, file, how it\'s structured, the tech stack, architecture, data flow, and the reasoning behind how it\'s built\n\n' +
+      '2. Git status — show me what\'s uncommitted, what\'s committed but not pushed, what branch we\'re on, and any stale branches. If there\'s unpushed work, tell me what it is\n\n' +
+      '3. Web context — search for the latest docs, changelogs, or known issues for the major dependencies in this project so we\'re working with current info, not outdated assumptions\n\n' +
+      '4. Give me the breakdown:\n' +
+      '   - Key files and what they do\n' +
+      '   - Patterns and conventions used\n' +
+      '   - Config, build system, deployment setup\n' +
+      '   - What\'s solid vs what needs work\n' +
+      '   - Any red flags, tech debt, or security concerns\n\n' +
+      'Don\'t summarize — read the actual code. I want you to know this project as well as I do before we touch anything.'
+    )
   }, [sendMessage])
 
   const handleAttachFile = useCallback(async () => {
@@ -235,7 +251,7 @@ export default function App() {
                 >
                   <GitCommit size={17} />
                 </button>
-                {/* btn-3: Skills (back, leftmost) */}
+                {/* btn-3: Skills */}
                 <button
                   className="stack-btn stack-btn-3 glass-surface"
                   title="Skills & Plugins"
@@ -243,6 +259,15 @@ export default function App() {
                   disabled={isRunning}
                 >
                   <HeadCircuit size={17} />
+                </button>
+                {/* btn-4: Project Recon (back, leftmost) */}
+                <button
+                  className="stack-btn stack-btn-4 glass-surface"
+                  title="Project Recon"
+                  onClick={handleProjectRecon}
+                  disabled={isRunning}
+                >
+                  <MagnifyingGlass size={17} />
                 </button>
               </div>
             </div>
