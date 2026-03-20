@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Paperclip, GitCommit, HeadCircuit, MagnifyingGlass, Rocket, ThumbsUp, ListChecks, Lightbulb,
-  Robot, Notepad, Brain, Warning, Sparkle, SealCheck, GraduationCap, Broom,
+  Robot, Notepad, Brain, Sparkle, SealCheck, GraduationCap, Broom, RocketLaunch,
 } from '@phosphor-icons/react'
 import { TabStrip } from './components/TabStrip'
 import { ConversationView } from './components/ConversationView'
@@ -299,15 +299,23 @@ export default function App() {
     )
   }, [sendMessage])
 
-  const handleSanityCheck = useCallback(() => {
+  const handlePreLaunch = useCallback(() => {
     sendMessage(
-      'Stop and double-check yourself before continuing:\n\n' +
-      '- Are you in the right project/repo? Read the package.json and confirm.\n' +
-      '- Are you editing the right files? Verify the paths match what we\'re working on.\n' +
-      '- Are your changes going to break anything that was already working?\n' +
-      '- Is your approach actually correct, or are you guessing?\n' +
-      '- Did you miss anything from what I asked?\n\n' +
-      'Take a step back, verify everything, and tell me if you need to course-correct.'
+      'I\'m about to point the domain to this site. Before I change nameservers, do a full pre-launch sweep:\n\n' +
+      '1. Run the build — does it pass clean? Any errors or warnings?\n' +
+      '2. Check every page route — do they all render? Any 404s?\n' +
+      '3. Check every link — nav links, footer links, CTAs, social links. Do they all go somewhere real?\n' +
+      '4. Check every form — does the submit action work? Is there a form backend configured (Formspree, mailto, etc.)?\n' +
+      '5. Check every image — any broken URLs, placeholders left in, or missing alt tags?\n' +
+      '6. Mobile check — does it look right at 375px? Any overflow, cut-off text, or unusable forms?\n' +
+      '7. Meta tags — does every page have a title, description, and OG image? Check the actual content, not just that the tags exist.\n' +
+      '8. Favicon — is it set? Does it show in the browser tab?\n' +
+      '9. Contact info — is the phone number, email, and address correct and clickable (tel:, mailto:)?\n' +
+      '10. Legal — is there a privacy policy and terms page, or at least a placeholder with instructions?\n' +
+      '11. Analytics — is Google Analytics, GTM, or equivalent configured?\n' +
+      '12. Performance — any massive unoptimized images or render-blocking scripts?\n\n' +
+      'For each item: PASS, FAIL (with what\'s wrong and how to fix it), or NEEDS MY INPUT.\n' +
+      'Fix everything you can. Tell me exactly what I need to do for the rest.'
     )
   }, [sendMessage])
 
@@ -542,14 +550,14 @@ export default function App() {
                 >
                   <Broom size={17} />
                 </button>
-                {/* r-5: Sanity Check */}
+                {/* r-5: Pre-Launch Check */}
                 <button
                   className="stack-btn-r stack-btn-r-5 glass-surface"
-                  title="Sanity Check"
-                  onClick={handleSanityCheck}
+                  title="Pre-Launch Check"
+                  onClick={handlePreLaunch}
                   disabled={isRunning}
                 >
-                  <Warning size={17} />
+                  <RocketLaunch size={17} />
                 </button>
                 {/* r-6: Any More Ideas */}
                 <button
