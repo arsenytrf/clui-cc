@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Paperclip, GitCommit, HeadCircuit, MagnifyingGlass, Rocket, ThumbsUp, ListChecks, Lightbulb,
-  FastForward, Robot, Notepad, Brain, Warning,
+  FastForward, Robot, Notepad, Brain, Warning, Sparkle,
 } from '@phosphor-icons/react'
 import { TabStrip } from './components/TabStrip'
 import { ConversationView } from './components/ConversationView'
@@ -240,6 +240,13 @@ export default function App() {
       '- For each action: what specifically to do, why it matters, and how much effort it takes.\n' +
       '- If you can fix something right now without my input, just do it.\n\n' +
       'Don\'t ask me questions. Don\'t hedge. Think, research, reason, act.'
+    )
+  }, [sendMessage])
+
+  const handleAnyMoreIdeas = useCallback(() => {
+    sendMessage(
+      'What else you got? Look at everything we\'ve done so far and tell me what else you\'d do if you had free rein. ' +
+      'Don\'t repeat anything we already covered — only new ideas. Push it further.'
     )
   }, [sendMessage])
 
@@ -494,6 +501,15 @@ export default function App() {
                   disabled={isRunning}
                 >
                   <Warning size={17} />
+                </button>
+                {/* r-6: Any More Ideas */}
+                <button
+                  className="stack-btn-r stack-btn-r-6 glass-surface"
+                  title="Any More Ideas?"
+                  onClick={handleAnyMoreIdeas}
+                  disabled={isRunning}
+                >
+                  <Sparkle size={17} />
                 </button>
               </div>
             </div>
