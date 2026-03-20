@@ -265,77 +265,77 @@ export default function App() {
               className="circles-out"
             >
               <div className="btn-stack">
-                {/* btn-1: Attach (front, rightmost) */}
+                {/* btn-1: Go Ahead (front — most used) */}
                 <button
                   className="stack-btn stack-btn-1 glass-surface"
-                  title="Attach file"
-                  onClick={handleAttachFile}
-                  disabled={isRunning}
-                >
-                  <Paperclip size={17} />
-                </button>
-                {/* btn-2: Commit & Push */}
-                <button
-                  className="stack-btn stack-btn-2 glass-surface"
-                  title="Commit & Push"
-                  onClick={handleCommitPush}
-                  disabled={isRunning}
-                >
-                  <GitCommit size={17} />
-                </button>
-                {/* btn-3: Skills */}
-                <button
-                  className="stack-btn stack-btn-3 glass-surface"
-                  title="Skills & Plugins"
-                  onClick={() => useSessionStore.getState().toggleMarketplace()}
-                  disabled={isRunning}
-                >
-                  <HeadCircuit size={17} />
-                </button>
-                {/* btn-4: Project Recon */}
-                <button
-                  className="stack-btn stack-btn-4 glass-surface"
-                  title="Project Recon"
-                  onClick={handleProjectRecon}
-                  disabled={isRunning}
-                >
-                  <MagnifyingGlass size={17} />
-                </button>
-                {/* btn-5: Go Ahead */}
-                <button
-                  className="stack-btn stack-btn-5 glass-surface"
                   title="Go Ahead"
                   onClick={handleProceed}
                   disabled={isRunning}
                 >
                   <Rocket size={17} />
                 </button>
-                {/* btn-6: Great Job */}
+                {/* btn-2: Great Job */}
                 <button
-                  className="stack-btn stack-btn-6 glass-surface"
+                  className="stack-btn stack-btn-2 glass-surface"
                   title="Great Job"
                   onClick={handleGreatJob}
                   disabled={isRunning}
                 >
                   <ThumbsUp size={17} />
                 </button>
-                {/* btn-7: Roadmap */}
+                {/* btn-3: Commit & Push */}
                 <button
-                  className="stack-btn stack-btn-7 glass-surface"
+                  className="stack-btn stack-btn-3 glass-surface"
+                  title="Commit & Push"
+                  onClick={handleCommitPush}
+                  disabled={isRunning}
+                >
+                  <GitCommit size={17} />
+                </button>
+                {/* btn-4: Attach */}
+                <button
+                  className="stack-btn stack-btn-4 glass-surface"
+                  title="Attach file"
+                  onClick={handleAttachFile}
+                  disabled={isRunning}
+                >
+                  <Paperclip size={17} />
+                </button>
+                {/* btn-5: Brainstorm */}
+                <button
+                  className="stack-btn stack-btn-5 glass-surface"
+                  title="Brainstorm"
+                  onClick={handleBrainstorm}
+                  disabled={isRunning}
+                >
+                  <Lightbulb size={17} />
+                </button>
+                {/* btn-6: Roadmap */}
+                <button
+                  className="stack-btn stack-btn-6 glass-surface"
                   title="Roadmap"
                   onClick={handleRoadmap}
                   disabled={isRunning}
                 >
                   <ListChecks size={17} />
                 </button>
-                {/* btn-8: Brainstorm (back, leftmost) */}
+                {/* btn-7: Project Recon */}
                 <button
-                  className="stack-btn stack-btn-8 glass-surface"
-                  title="Brainstorm"
-                  onClick={handleBrainstorm}
+                  className="stack-btn stack-btn-7 glass-surface"
+                  title="Project Recon"
+                  onClick={handleProjectRecon}
                   disabled={isRunning}
                 >
-                  <Lightbulb size={17} />
+                  <MagnifyingGlass size={17} />
+                </button>
+                {/* btn-8: Skills (back — rarely used) */}
+                <button
+                  className="stack-btn stack-btn-8 glass-surface"
+                  title="Skills & Plugins"
+                  onClick={() => useSessionStore.getState().toggleMarketplace()}
+                  disabled={isRunning}
+                >
+                  <HeadCircuit size={17} />
                 </button>
               </div>
             </div>
