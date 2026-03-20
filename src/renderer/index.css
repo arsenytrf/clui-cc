@@ -164,7 +164,7 @@ input::placeholder {
 
 .btn-stack {
   position: relative;
-  width: 360px;
+  width: 420px;
   height: 46px;
   overflow: visible;
 }
@@ -187,22 +187,24 @@ input::placeholder {
 .stack-btn:disabled { color: var(--clui-btn-disabled); cursor: default; }
 
 /* Collapsed: stacked on the right, overlapping */
-.stack-btn-1 { right: 0;     z-index: 7; }
-.stack-btn-2 { right: 28px;  z-index: 6; }
-.stack-btn-3 { right: 56px;  z-index: 5; }
-.stack-btn-4 { right: 84px;  z-index: 4; }
-.stack-btn-5 { right: 112px; z-index: 3; }
-.stack-btn-6 { right: 140px; z-index: 2; }
-.stack-btn-7 { right: 168px; z-index: 1; }
+.stack-btn-1 { right: 0;     z-index: 8; }
+.stack-btn-2 { right: 26px;  z-index: 7; }
+.stack-btn-3 { right: 52px;  z-index: 6; }
+.stack-btn-4 { right: 78px;  z-index: 5; }
+.stack-btn-5 { right: 104px; z-index: 4; }
+.stack-btn-6 { right: 130px; z-index: 3; }
+.stack-btn-7 { right: 156px; z-index: 2; }
+.stack-btn-8 { right: 182px; z-index: 1; }
 
 /* Expanded on hover: spread evenly */
 .btn-stack:hover .stack-btn-1 { right: 0; }
-.btn-stack:hover .stack-btn-2 { right: 52px; }
-.btn-stack:hover .stack-btn-3 { right: 104px; }
-.btn-stack:hover .stack-btn-4 { right: 156px; }
-.btn-stack:hover .stack-btn-5 { right: 208px; }
-.btn-stack:hover .stack-btn-6 { right: 260px; }
-.btn-stack:hover .stack-btn-7 { right: 312px; }
+.btn-stack:hover .stack-btn-2 { right: 50px; }
+.btn-stack:hover .stack-btn-3 { right: 100px; }
+.btn-stack:hover .stack-btn-4 { right: 150px; }
+.btn-stack:hover .stack-btn-5 { right: 200px; }
+.btn-stack:hover .stack-btn-6 { right: 250px; }
+.btn-stack:hover .stack-btn-7 { right: 300px; }
+.btn-stack:hover .stack-btn-8 { right: 350px; }
 
 /* ─── Drag region for frameless window ─── */
 .drag-region {

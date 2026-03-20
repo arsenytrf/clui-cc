@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Paperclip, GitCommit, HeadCircuit, MagnifyingGlass, Rocket, ThumbsUp, ListChecks } from '@phosphor-icons/react'
+import { Paperclip, GitCommit, HeadCircuit, MagnifyingGlass, Rocket, ThumbsUp, ListChecks, Lightbulb } from '@phosphor-icons/react'
 import { TabStrip } from './components/TabStrip'
 import { ConversationView } from './components/ConversationView'
 import { InputBar } from './components/InputBar'
@@ -132,6 +132,15 @@ export default function App() {
       'Give me a complete roadmap of everything I need to do or provide to make this project fully standalone and production-ready. ' +
       'List every step, every asset I need to gather, every configuration I need to set up, and every decision I need to make. ' +
       'Be specific — no vague steps. I want a clear numbered checklist I can work through one by one.'
+    )
+  }, [sendMessage])
+
+  const handleBrainstorm = useCallback(() => {
+    sendMessage(
+      'Look at this project with fresh eyes. Search the web for what competitors and similar tools are doing, ' +
+      'then suggest specific improvements, new features, and changes that would make this project stand out. ' +
+      'Be specific — show me what others have that we don\'t, what we could do better, and any quick wins I\'m missing. ' +
+      'Prioritize the suggestions by impact.'
     )
   }, [sendMessage])
 
@@ -310,7 +319,7 @@ export default function App() {
                 >
                   <ThumbsUp size={17} />
                 </button>
-                {/* btn-7: Roadmap (back, leftmost) */}
+                {/* btn-7: Roadmap */}
                 <button
                   className="stack-btn stack-btn-7 glass-surface"
                   title="Roadmap"
@@ -318,6 +327,15 @@ export default function App() {
                   disabled={isRunning}
                 >
                   <ListChecks size={17} />
+                </button>
+                {/* btn-8: Brainstorm (back, leftmost) */}
+                <button
+                  className="stack-btn stack-btn-8 glass-surface"
+                  title="Brainstorm"
+                  onClick={handleBrainstorm}
+                  disabled={isRunning}
+                >
+                  <Lightbulb size={17} />
                 </button>
               </div>
             </div>
