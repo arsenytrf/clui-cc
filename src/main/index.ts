@@ -484,6 +484,24 @@ ipcMain.handle(IPC.LOAD_SESSION, async (_e, arg: { sessionId: string; projectPat
   }
 })
 
+ipcMain.handle(IPC.DELETE_SESSION, async (_e, { sessionId, projectPath }: { sessionId: string; projectPath?: string }) => {
+  log(`IPC DELETE_SESSION ${sessionId}`)
+  try {
+    const cwd = projectPath || process.cwd()
+    const encodedPath = cwd.replace(/\//g, '-')
+    const filePath = join(homedir(), '.claude', 'projects', encodedPath, `${sessionId}.jsonl`)
+    if (existsSync(filePath)) {
+      const { unlinkSync } = require('fs')
+      unlinkSync(filePath)
+      return { ok: true }
+    }
+    return { ok: false, error: 'File not found' }
+  } catch (err: unknown) {
+    log(`DELETE_SESSION error: ${err}`)
+    return { ok: false, error: err instanceof Error ? err.message : String(err) }
+  }
+})
+
 ipcMain.handle(IPC.SELECT_DIRECTORY, async () => {
   if (!mainWindow) return null
   // macOS: activate app so unparented dialog appears on top (not behind other apps).

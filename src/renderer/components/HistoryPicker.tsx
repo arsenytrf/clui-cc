@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
-import { Clock, ChatCircle } from '@phosphor-icons/react'
+import { Clock, Trash } from '@phosphor-icons/react'
 import { useSessionStore } from '../stores/sessionStore'
 import { usePopoverLayer } from './PopoverLayer'
 import { useColors } from '../theme'
@@ -17,12 +17,6 @@ function formatTimeAgo(isoDate: string): string {
   const days = Math.floor(hours / 24)
   if (days < 7) return `${days}d ago`
   return new Date(isoDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
-}
-
-function formatSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes}B`
-  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)}K`
-  return `${(bytes / (1024 * 1024)).toFixed(1)}M`
 }
 
 export function HistoryPicker() {
@@ -103,6 +97,12 @@ export function HistoryPicker() {
     void resumeSession(session.sessionId, title, effectiveProjectPath)
   }
 
+  const handleDelete = async (e: React.MouseEvent, session: SessionMeta) => {
+    e.stopPropagation()
+    await window.clui.deleteSession(session.sessionId, effectiveProjectPath)
+    setSessions((prev) => prev.filter((s) => s.sessionId !== session.sessionId))
+  }
+
   return (
     <>
       <button
@@ -129,7 +129,7 @@ export function HistoryPicker() {
             ...(pos.top != null ? { top: pos.top } : {}),
             ...(pos.bottom != null ? { bottom: pos.bottom } : {}),
             right: pos.right,
-            width: 280,
+            width: 300,
             pointerEvents: 'auto',
             background: colors.popoverBg,
             backdropFilter: 'blur(20px)',
@@ -146,7 +146,7 @@ export function HistoryPicker() {
             Recent Sessions
           </div>
 
-          <div className="overflow-y-auto py-1" style={{ maxHeight: pos.maxHeight != null ? undefined : 180 }}>
+          <div className="overflow-y-auto" style={{ maxHeight: pos.maxHeight != null ? undefined : 240 }}>
             {loading && (
               <div className="px-3 py-4 text-center text-[11px]" style={{ color: colors.textTertiary }}>
                 Loading...
@@ -160,23 +160,31 @@ export function HistoryPicker() {
             )}
 
             {!loading && sessions.map((session) => (
-              <button
+              <div
                 key={session.sessionId}
+                className="group flex items-center gap-2 px-3 py-2 cursor-pointer transition-colors"
+                style={{ borderBottom: `1px solid ${colors.popoverBorder}` }}
                 onClick={() => handleSelect(session)}
-                className="w-full flex items-start gap-2.5 px-3 py-2 text-left transition-colors"
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = colors.surfaceHover }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = 'transparent' }}
               >
-                <ChatCircle size={13} className="flex-shrink-0 mt-0.5" style={{ color: colors.textTertiary }} />
                 <div className="min-w-0 flex-1">
-                  <div className="text-[11px] truncate" style={{ color: colors.textPrimary }}>
+                  <div className="text-[12px] truncate" style={{ color: colors.textPrimary }}>
                     {session.firstMessage || session.slug || session.sessionId.substring(0, 8)}
                   </div>
-                  <div className="flex items-center gap-2 text-[10px] mt-0.5" style={{ color: colors.textTertiary }}>
-                    <span>{formatTimeAgo(session.lastTimestamp)}</span>
-                    <span>{formatSize(session.size)}</span>
-                    {session.slug && <span className="truncate">{session.slug}</span>}
+                  <div className="text-[10px] mt-0.5" style={{ color: colors.textTertiary }}>
+                    {formatTimeAgo(session.lastTimestamp)}
                   </div>
                 </div>
-              </button>
+                <button
+                  onClick={(e) => handleDelete(e, session)}
+                  className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-60 hover:!opacity-100 transition-opacity"
+                  style={{ color: colors.statusError }}
+                  title="Delete session"
+                >
+                  <Trash size={13} />
+                </button>
+              </div>
             ))}
           </div>
         </motion.div>,
