@@ -22,7 +22,7 @@ export default function App() {
   const addAttachments = useSessionStore((s) => s.addAttachments)
   const colors = useColors()
   const setSystemTheme = useThemeStore((s) => s.setSystemTheme)
-  const expandedUI = useThemeStore((s) => s.expandedUI)
+  const fullHeight = useThemeStore((s) => s.fullHeight)
 
   // ─── Theme initialization ───
   useEffect(() => {
@@ -95,12 +95,12 @@ export default function App() {
   const marketplaceOpen = useSessionStore((s) => s.marketplaceOpen)
   const isRunning = activeTabStatus === 'running' || activeTabStatus === 'connecting'
 
-  // Layout dimensions — expandedUI widens and heightens the panel
-  const contentWidth = expandedUI ? 700 : spacing.contentWidth
-  const cardExpandedWidth = expandedUI ? 700 : 460
-  const cardCollapsedWidth = expandedUI ? 670 : 430
-  const cardCollapsedMargin = expandedUI ? 15 : 15
-  const bodyMaxHeight = expandedUI ? 520 : 400
+  // Layout dimensions — always full width; fullHeight toggle controls vertical space
+  const contentWidth = 700
+  const cardExpandedWidth = 700
+  const cardCollapsedWidth = 670
+  const cardCollapsedMargin = 15
+  const bodyMaxHeight = fullHeight ? 520 : 400
 
   const handleScreenshot = useCallback(async () => {
     const result = await window.clui.takeScreenshot()

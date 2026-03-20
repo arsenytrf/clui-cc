@@ -276,13 +276,13 @@ interface ThemeState {
   isDark: boolean
   themeMode: ThemeMode
   soundEnabled: boolean
-  expandedUI: boolean
+  fullHeight: boolean
   /** OS-reported dark mode — used when themeMode is 'system' */
   _systemIsDark: boolean
   setIsDark: (isDark: boolean) => void
   setThemeMode: (mode: ThemeMode) => void
   setSoundEnabled: (enabled: boolean) => void
-  setExpandedUI: (expanded: boolean) => void
+  setFullHeight: (enabled: boolean) => void
   /** Called by OS theme change listener — updates system value */
   setSystemTheme: (isDark: boolean) => void
 }
@@ -308,7 +308,7 @@ function applyTheme(isDark: boolean): void {
 
 const SETTINGS_KEY = 'clui-settings'
 
-function loadSettings(): { themeMode: ThemeMode; soundEnabled: boolean; expandedUI: boolean } {
+function loadSettings(): { themeMode: ThemeMode; soundEnabled: boolean; fullHeight: boolean } {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY)
     if (raw) {
@@ -316,25 +316,24 @@ function loadSettings(): { themeMode: ThemeMode; soundEnabled: boolean; expanded
       return {
         themeMode: ['light', 'dark'].includes(parsed.themeMode) ? parsed.themeMode : 'dark',
         soundEnabled: typeof parsed.soundEnabled === 'boolean' ? parsed.soundEnabled : true,
-        expandedUI: typeof parsed.expandedUI === 'boolean' ? parsed.expandedUI : false,
+        fullHeight: typeof parsed.fullHeight === 'boolean' ? parsed.fullHeight : false,
       }
     }
   } catch {}
-  return { themeMode: 'dark', soundEnabled: true, expandedUI: false }
+  return { themeMode: 'dark', soundEnabled: true, fullHeight: false }
 }
 
-function saveSettings(s: { themeMode: ThemeMode; soundEnabled: boolean; expandedUI: boolean }): void {
+function saveSettings(s: { themeMode: ThemeMode; soundEnabled: boolean; fullHeight: boolean }): void {
   try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)) } catch {}
 }
 
-// Always start in compact UI mode on launch.
-const saved = { ...loadSettings(), expandedUI: false }
+const saved = loadSettings()
 
 export const useThemeStore = create<ThemeState>((set, get) => ({
   isDark: saved.themeMode === 'dark' ? true : saved.themeMode === 'light' ? false : true,
   themeMode: saved.themeMode,
   soundEnabled: saved.soundEnabled,
-  expandedUI: saved.expandedUI,
+  fullHeight: saved.fullHeight,
   _systemIsDark: true,
   setIsDark: (isDark) => {
     set({ isDark })
@@ -344,15 +343,15 @@ export const useThemeStore = create<ThemeState>((set, get) => ({
     const resolved = mode === 'system' ? get()._systemIsDark : mode === 'dark'
     set({ themeMode: mode, isDark: resolved })
     applyTheme(resolved)
-    saveSettings({ themeMode: mode, soundEnabled: get().soundEnabled, expandedUI: get().expandedUI })
+    saveSettings({ themeMode: mode, soundEnabled: get().soundEnabled, fullHeight: get().fullHeight })
   },
   setSoundEnabled: (enabled) => {
     set({ soundEnabled: enabled })
-    saveSettings({ themeMode: get().themeMode, soundEnabled: enabled, expandedUI: get().expandedUI })
+    saveSettings({ themeMode: get().themeMode, soundEnabled: enabled, fullHeight: get().fullHeight })
   },
-  setExpandedUI: (expanded) => {
-    set({ expandedUI: expanded })
-    saveSettings({ themeMode: get().themeMode, soundEnabled: get().soundEnabled, expandedUI: expanded })
+  setFullHeight: (enabled) => {
+    set({ fullHeight: enabled })
+    saveSettings({ themeMode: get().themeMode, soundEnabled: get().soundEnabled, fullHeight: enabled })
   },
   setSystemTheme: (isDark) => {
     set({ _systemIsDark: isDark })

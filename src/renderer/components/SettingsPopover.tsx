@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { motion } from 'framer-motion'
-import { DotsThree, Bell, ArrowsOutSimple, Moon } from '@phosphor-icons/react'
+import { DotsThree, Bell, ArrowsVertical, Moon } from '@phosphor-icons/react'
 import { useThemeStore } from '../theme'
 import { useSessionStore } from '../stores/sessionStore'
 import { usePopoverLayer } from './PopoverLayer'
@@ -48,8 +48,8 @@ export function SettingsPopover() {
   const setSoundEnabled = useThemeStore((s) => s.setSoundEnabled)
   const themeMode = useThemeStore((s) => s.themeMode)
   const setThemeMode = useThemeStore((s) => s.setThemeMode)
-  const expandedUI = useThemeStore((s) => s.expandedUI)
-  const setExpandedUI = useThemeStore((s) => s.setExpandedUI)
+  const fullHeight = useThemeStore((s) => s.fullHeight)
+  const setFullHeight = useThemeStore((s) => s.setFullHeight)
   const isExpanded = useSessionStore((s) => s.isExpanded)
   const popoverLayer = usePopoverLayer()
   const colors = useColors()
@@ -118,7 +118,7 @@ export function SettingsPopover() {
     return () => {
       if (raf) cancelAnimationFrame(raf)
     }
-  }, [open, expandedUI, isExpanded, updatePos])
+  }, [open, fullHeight, isExpanded, updatePos])
 
   const handleToggle = () => {
     if (!open) updatePos()
@@ -162,22 +162,22 @@ export function SettingsPopover() {
           }}
         >
           <div className="p-3 flex flex-col gap-2.5">
-            {/* Full width */}
+            {/* Full height */}
             <div>
               <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2 min-w-0">
-                  <ArrowsOutSimple size={14} style={{ color: colors.textTertiary }} />
+                  <ArrowsVertical size={14} style={{ color: colors.textTertiary }} />
                   <div className="text-[12px] font-medium" style={{ color: colors.textPrimary }}>
-                    Full width
+                    Full height
                   </div>
                 </div>
                 <RowToggle
-                  checked={expandedUI}
+                  checked={fullHeight}
                   onChange={(next) => {
-                    setExpandedUI(next)
+                    setFullHeight(next)
                   }}
                   colors={colors}
-                  label="Toggle full width panel"
+                  label="Toggle full height panel"
                 />
               </div>
             </div>

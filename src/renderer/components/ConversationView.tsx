@@ -68,7 +68,7 @@ export function ConversationView() {
   const isNearBottomRef = useRef(true)
   const prevTabIdRef = useRef(activeTabId)
   const colors = useColors()
-  const expandedUI = useThemeStore((s) => s.expandedUI)
+  const fullHeight = useThemeStore((s) => s.fullHeight)
 
   const tab = tabs.find((t) => t.id === activeTabId)
 
@@ -150,7 +150,7 @@ export function ConversationView() {
       <div
         ref={scrollRef}
         className="overflow-y-auto overflow-x-hidden px-4 pt-2 conversation-selectable"
-        style={{ maxHeight: expandedUI ? 460 : 336, paddingBottom: 28 }}
+        style={{ maxHeight: fullHeight ? 460 : 336, paddingBottom: 28 }}
         onScroll={handleScroll}
       >
         {/* Load older button */}
