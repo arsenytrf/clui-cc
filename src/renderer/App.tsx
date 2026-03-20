@@ -203,15 +203,16 @@ export default function App() {
     )
   }, [sendMessage])
 
-  const handleWhatsNext = useCallback(() => {
+  const handleMakeItHappen = useCallback(() => {
     sendMessage(
-      'Look at this project and tell me:\n' +
-      '1. What\'s unfinished — any incomplete features, placeholder content, TODO comments, or missing pages\n' +
-      '2. What\'s broken — run the build, check for errors, test all links and forms\n' +
-      '3. What needs my input — decisions only I can make (content, branding, credentials, business logic)\n' +
-      '4. What you can do right now without me — list these so I can tell you to go ahead\n' +
-      '5. What\'s blocking launch — the critical path items that must be done before this goes live\n\n' +
-      'Prioritize by impact. Be specific, not vague.'
+      'Look at what you just recommended or listed. Take every action item that requires a browser and convert each one into a browser agent prompt using this format:\n\n' +
+      '```xml\n' +
+      '<task>What you\'re doing and where</task>\n' +
+      '<context>Any info the agent needs</context>\n' +
+      '<steps>Numbered steps with exact URLs, exact text to type, keyboard shortcuts for forms, screenshot verification after critical steps</steps>\n' +
+      '<done>What the screen should look like when complete</done>\n' +
+      '```\n\n' +
+      'One prompt per task. Under 500 words each. Include the actual data — don\'t leave blanks. Output each in a code block I can copy directly into Claude Computer Use.'
     )
   }, [sendMessage])
 
@@ -530,11 +531,11 @@ export default function App() {
                 >
                   <Robot size={17} />
                 </button>
-                {/* r-2: What's Next */}
+                {/* r-2: Make It Happen */}
                 <button
                   className="stack-btn-r stack-btn-r-2 glass-surface"
-                  title="What's Next"
-                  onClick={handleWhatsNext}
+                  title="Make It Happen"
+                  onClick={handleMakeItHappen}
                   disabled={isRunning}
                 >
                   <Notepad size={17} />
