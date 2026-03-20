@@ -59,6 +59,7 @@ interface State {
   installMarketplacePlugin: (plugin: CatalogPlugin) => Promise<void>
   uninstallMarketplacePlugin: (plugin: CatalogPlugin) => Promise<void>
   buildYourOwn: () => void
+  restoreTabs: () => Promise<boolean>
   resumeSession: (sessionId: string, title?: string, projectPath?: string) => Promise<string>
   addSystemMessage: (content: string) => void
   sendMessage: (prompt: string, projectPath?: string) => void
@@ -76,6 +77,52 @@ interface State {
 
 let msgCounter = 0
 const nextMsgId = () => `msg-${++msgCounter}`
+
+// ─── Tab persistence ───
+
+const TABS_STORAGE_KEY = 'clui-saved-tabs'
+
+interface SavedTab {
+  title: string
+  workingDirectory: string
+  hasChosenDirectory: boolean
+  additionalDirs: string[]
+  claudeSessionId: string | null
+}
+
+function saveTabs(tabs: TabState[], activeTabId: string): void {
+  try {
+    const data = {
+      tabs: tabs.map((t) => ({
+        title: t.title,
+        workingDirectory: t.workingDirectory,
+        hasChosenDirectory: t.hasChosenDirectory,
+        additionalDirs: t.additionalDirs,
+        claudeSessionId: t.claudeSessionId,
+      })),
+      activeIndex: tabs.findIndex((t) => t.id === activeTabId),
+    }
+    localStorage.setItem(TABS_STORAGE_KEY, JSON.stringify(data))
+  } catch {}
+}
+
+function loadSavedTabs(): { tabs: SavedTab[]; activeIndex: number } | null {
+  try {
+    const raw = localStorage.getItem(TABS_STORAGE_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed.tabs) || parsed.tabs.length === 0) return null
+    return parsed
+  } catch {
+    return null
+  }
+}
+
+/** Call after any mutation that changes tab metadata */
+function persistTabs(): void {
+  const { tabs, activeTabId } = useSessionStore.getState()
+  saveTabs(tabs, activeTabId)
+}
 
 // ─── Notification sound (plays when task completes while window is hidden) ───
 const notificationAudio = new Audio(notificationSrc)
@@ -170,6 +217,7 @@ export const useSessionStore = create<State>((set, get) => ({
         tabs: [...s.tabs, tab],
         activeTabId: tab.id,
       }))
+      persistTabs()
       return tabId
     } catch {
       const tab = makeLocalTab()
@@ -178,6 +226,7 @@ export const useSessionStore = create<State>((set, get) => ({
         tabs: [...s.tabs, tab],
         activeTabId: tab.id,
       }))
+      persistTabs()
       return tab.id
     }
   },
@@ -185,13 +234,11 @@ export const useSessionStore = create<State>((set, get) => ({
   selectTab: (tabId) => {
     const s = get()
     if (tabId === s.activeTabId) {
-      // Already active — just clear unread
       set((prev) => ({
         marketplaceOpen: false,
         tabs: prev.tabs.map((t) => t.id === tabId ? { ...t, hasUnread: false } : t),
       }))
     } else {
-      // Switching to a different tab: mark as read
       set((prev) => ({
         activeTabId: tabId,
         marketplaceOpen: false,
@@ -200,6 +247,7 @@ export const useSessionStore = create<State>((set, get) => ({
         ),
       }))
     }
+    persistTabs()
   },
 
   toggleMarketplace: () => {
@@ -305,6 +353,7 @@ export const useSessionStore = create<State>((set, get) => ({
       if (remaining.length === 0) {
         const newTab = makeLocalTab()
         set({ tabs: [newTab], activeTabId: newTab.id })
+        persistTabs()
         return
       }
       const closedIndex = s.tabs.findIndex((t) => t.id === tabId)
@@ -313,6 +362,7 @@ export const useSessionStore = create<State>((set, get) => ({
     } else {
       set({ tabs: remaining })
     }
+    persistTabs()
   },
 
   clearTab: () => {
@@ -332,6 +382,60 @@ export const useSessionStore = create<State>((set, get) => ({
     set((s) => ({
       tabs: s.tabs.map((t) => t.id === tabId ? { ...t, title: trimmed } : t),
     }))
+    persistTabs()
+  },
+
+  restoreTabs: async () => {
+    const saved = loadSavedTabs()
+    if (!saved) return false
+
+    const restoredTabs: TabState[] = []
+
+    for (const savedTab of saved.tabs) {
+      let tabId: string
+      try {
+        const result = await window.clui.createTab()
+        tabId = result.tabId
+      } catch {
+        tabId = crypto.randomUUID()
+      }
+
+      // Load message history if we have a session ID
+      let messages: Message[] = []
+      if (savedTab.claudeSessionId && savedTab.workingDirectory) {
+        try {
+          const history = await window.clui.loadSession(savedTab.claudeSessionId, savedTab.workingDirectory)
+          messages = history.map((m) => ({
+            id: nextMsgId(),
+            role: m.role as Message['role'],
+            content: m.content,
+            toolName: m.toolName,
+            toolStatus: m.toolName ? 'completed' as const : undefined,
+            timestamp: m.timestamp,
+          }))
+        } catch {}
+      }
+
+      restoredTabs.push({
+        ...makeLocalTab(),
+        id: tabId,
+        title: savedTab.title,
+        workingDirectory: savedTab.workingDirectory,
+        hasChosenDirectory: savedTab.hasChosenDirectory,
+        additionalDirs: savedTab.additionalDirs || [],
+        claudeSessionId: savedTab.claudeSessionId,
+        messages,
+      })
+    }
+
+    if (restoredTabs.length === 0) return false
+
+    const activeIndex = Math.min(Math.max(0, saved.activeIndex), restoredTabs.length - 1)
+    set({
+      tabs: restoredTabs,
+      activeTabId: restoredTabs[activeIndex].id,
+    })
+    return true
   },
 
   resumeSession: async (sessionId, title, projectPath) => {
@@ -365,6 +469,7 @@ export const useSessionStore = create<State>((set, get) => ({
         isExpanded: true,
       }))
       // Don't call initSession — the first real prompt will use --resume with the sessionId
+      persistTabs()
       return tabId
     } catch {
       const tab = makeLocalTab()
@@ -377,6 +482,7 @@ export const useSessionStore = create<State>((set, get) => ({
         activeTabId: tab.id,
         isExpanded: true,
       }))
+      persistTabs()
       return tab.id
     }
   },
@@ -436,6 +542,7 @@ export const useSessionStore = create<State>((set, get) => ({
           : t
       ),
     }))
+    persistTabs()
   },
 
   removeDirectory: (dir) => {
@@ -447,6 +554,7 @@ export const useSessionStore = create<State>((set, get) => ({
           : t
       ),
     }))
+    persistTabs()
   },
 
   setBaseDirectory: (dir) => {
@@ -465,6 +573,7 @@ export const useSessionStore = create<State>((set, get) => ({
           : t
       ),
     }))
+    persistTabs()
   },
 
   // ─── Attachment management ───
@@ -564,6 +673,8 @@ export const useSessionStore = create<State>((set, get) => ({
         }
       }),
     }))
+
+    persistTabs()
 
     // Send to backend — ControlPlane will queue if a run is active
     const { preferredModel } = get()
@@ -840,6 +951,10 @@ export const useSessionStore = create<State>((set, get) => ({
 
       return { tabs }
     })
+    // Persist when session ID or title changes
+    if (event.type === 'session_init' || event.type === 'task_complete') {
+      persistTabs()
+    }
   },
 
   handleStatusChange: (tabId, newStatus) => {

@@ -39,11 +39,15 @@ export default function App() {
   }, [setSystemTheme])
 
   useEffect(() => {
-    useSessionStore.getState().initStaticInfo().then(() => {
+    useSessionStore.getState().initStaticInfo().then(async () => {
+      // Try restoring saved tabs first
+      const restored = await useSessionStore.getState().restoreTabs()
+      if (restored) return
+
+      // No saved tabs — create a fresh one
       const homeDir = useSessionStore.getState().staticInfo?.homePath || '~'
       const tab = useSessionStore.getState().tabs[0]
       if (tab) {
-        // Set working directory to home by default (user hasn't chosen yet)
         useSessionStore.setState((s) => ({
           tabs: s.tabs.map((t, i) => (i === 0 ? { ...t, workingDirectory: homeDir, hasChosenDirectory: false } : t)),
         }))
