@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Paperclip, GitCommit, HeadCircuit, MagnifyingGlass, Rocket, ThumbsUp, ListChecks, Lightbulb,
-  Robot, Notepad, Brain, Sparkle, SealCheck, GraduationCap, Broom, RocketLaunch,
+  Robot, Notepad, Brain, Sparkle, PaintBrush, GraduationCap, Broom, RocketLaunch,
 } from '@phosphor-icons/react'
 import { TabStrip } from './components/TabStrip'
 import { ConversationView } from './components/ConversationView'
@@ -244,14 +244,21 @@ export default function App() {
     )
   }, [sendMessage])
 
-  const handleProveIt = useCallback(() => {
+  const handleLevelUpDesign = useCallback(() => {
     sendMessage(
-      'Prove it. For every major decision you made — design choices, architecture, copy, layout, features — show me where you got the idea:\n\n' +
-      '1. WebSearch for award-winning sites, top-rated competitors, or industry leaders that do what you did (or what you should have done)\n' +
-      '2. WebFetch the best ones and show me specifically what they do and how our approach compares\n' +
-      '3. For each decision: what was your reasoning, what\'s the evidence it works, and is there a better approach you missed?\n' +
-      '4. If you find something better than what you built, say so and show me what to change\n\n' +
-      'No hand-waving. Links, examples, and evidence for everything.'
+      'Look at this site\'s front-end design and make it better. Don\'t ask me what to improve — you\'re the designer.\n\n' +
+      '1. Open the site (run dev server or read the code). Look at every page with a designer\'s eye.\n' +
+      '2. WebSearch for award-winning sites in this same niche on Awwwards, Behance, or Dribbble. WebFetch 3-5 of them. Study what makes them feel premium.\n' +
+      '3. Compare our site to those. Be honest — where do we look generic, dated, or "AI-generated"?\n' +
+      '4. Fix it. Specifically look at:\n' +
+      '   - Typography: Is the font pairing bold enough? Are headlines big enough? Is there real contrast between display and body?\n' +
+      '   - Color: Are we using custom colors or safe defaults? Do we have enough full-color sections?\n' +
+      '   - Layout rhythm: Do sections feel varied or repetitive? Any card grids that should be something else?\n' +
+      '   - Spacing: Is it generous enough? Do sections breathe?\n' +
+      '   - Visual moments: Is there at least one "wow" section that stops you scrolling?\n' +
+      '   - Animations: Are scroll reveals and transitions enhancing or generic?\n' +
+      '   - Images: Are they high quality and specific to the business?\n\n' +
+      'Make the changes directly. Show me before/after for the biggest improvements.'
     )
   }, [sendMessage])
 
@@ -568,14 +575,14 @@ export default function App() {
                 >
                   <Sparkle size={17} />
                 </button>
-                {/* r-7: Prove It */}
+                {/* r-7: Level Up Design */}
                 <button
                   className="stack-btn-r stack-btn-r-7 glass-surface"
-                  title="Prove It"
-                  onClick={handleProveIt}
+                  title="Level Up Design"
+                  onClick={handleLevelUpDesign}
                   disabled={isRunning}
                 >
-                  <SealCheck size={17} />
+                  <PaintBrush size={17} />
                 </button>
                 {/* r-8: Teach Me */}
                 <button
