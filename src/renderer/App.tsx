@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Paperclip, GitCommit, HeadCircuit, MagnifyingGlass, Rocket, ThumbsUp, ListChecks, Lightbulb,
-  FastForward, Bug, Eye, ChatText, Broom, Flask, Article, CloudArrowUp,
+  FastForward, Robot, MagnifyingGlassPlus, Lightning, Notepad, Target, CloudArrowUp, ChatText,
 } from '@phosphor-icons/react'
 import { TabStrip } from './components/TabStrip'
 import { ConversationView } from './components/ConversationView'
@@ -169,68 +169,98 @@ export default function App() {
     sendMessage('Continue where you left off. Pick up exactly from where you stopped and keep going.')
   }, [sendMessage])
 
-  const handleFixErrors = useCallback(() => {
+  const handleAgentPrompt = useCallback(() => {
     sendMessage(
-      'Do a full code audit and fix everything:\n' +
-      '1. Run the build — fix all TypeScript errors, type mismatches, and missing imports\n' +
-      '2. Find and remove all unused imports, unused variables, and dead code\n' +
-      '3. Remove any commented-out code blocks, leftover console.logs, and TODO placeholders that were already addressed\n' +
-      '4. Check for unreachable code branches and redundant conditionals\n' +
-      '5. Verify all dependencies in package.json are actually used\n' +
-      '6. Run the build again to confirm everything is clean\n\n' +
-      'Show me a summary of what you found and fixed.'
+      'Analyze this project and identify everything that requires manual action outside the codebase — things like:\n' +
+      '- SEO submissions (Google Search Console indexing, sitemap submission, Bing Webmaster)\n' +
+      '- DNS and domain configuration\n' +
+      '- Third-party service setup (analytics, form backends, CDN, email)\n' +
+      '- Content that needs uploading (images, copy, legal pages)\n' +
+      '- Accounts or API keys that need creating\n' +
+      '- Social media or directory listings\n\n' +
+      'Then write me a complete, structured, step-by-step browser agent prompt I can copy-paste into Claude Computer Use to automate as many of these tasks as possible. ' +
+      'Format it as a numbered action list with exact URLs, exact clicks, and exact data to enter. ' +
+      'The prompt should be self-contained — someone with no context should be able to follow it.'
     )
   }, [sendMessage])
 
-  const handleReviewCode = useCallback(() => {
+  const handleSeoAudit = useCallback(() => {
     sendMessage(
-      'Do a thorough code review of this project:\n' +
-      '1. Check every file for unused imports, duplicate logic, and dead code paths\n' +
-      '2. Flag oversized components or files that should be split\n' +
-      '3. Look for hardcoded values that should be constants or environment variables\n' +
-      '4. Check for inconsistent patterns — naming conventions, file structure, code style\n' +
-      '5. Identify any security concerns (exposed keys, unsanitized input, XSS vectors)\n' +
-      '6. Note performance issues (unnecessary re-renders, missing memoization, large bundles)\n\n' +
-      'Be specific — file name, line number, and exactly what to change for each issue.'
+      'Do a full SEO audit of this project:\n' +
+      '1. Check every page for: title tag, meta description, Open Graph tags, canonical URL, heading hierarchy (single H1)\n' +
+      '2. Verify JSON-LD structured data (LocalBusiness, BreadcrumbList) is present and valid\n' +
+      '3. Check for sitemap.xml and robots.txt\n' +
+      '4. Verify all images have alt tags and are properly sized\n' +
+      '5. Check for broken internal links and missing pages\n' +
+      '6. Flag any SEO issues and fix what you can in the code\n\n' +
+      'Then write me a browser agent prompt for Claude Computer Use to:\n' +
+      '- Submit the sitemap to Google Search Console\n' +
+      '- Request indexing for each page URL\n' +
+      '- Submit to Bing Webmaster Tools\n' +
+      'Format as exact step-by-step actions with URLs and clicks.'
+    )
+  }, [sendMessage])
+
+  const handlePerformance = useCallback(() => {
+    sendMessage(
+      'Audit this project for performance:\n' +
+      '1. Check bundle size — identify the largest dependencies and any that could be lazy-loaded or replaced\n' +
+      '2. Image optimization — are images properly sized, using modern formats (WebP/AVIF), lazy-loaded?\n' +
+      '3. Font loading — are fonts preloaded, using display:swap, subset if possible?\n' +
+      '4. JavaScript — any unused code shipped to the client? Components that should be server-only?\n' +
+      '5. CSS — any unused Tailwind classes inflating the bundle?\n' +
+      '6. Core Web Vitals concerns — LCP, CLS, INP risks in the current code\n\n' +
+      'Fix everything you can directly. For things that need manual action, tell me exactly what to do.'
+    )
+  }, [sendMessage])
+
+  const handleWhatsNext = useCallback(() => {
+    sendMessage(
+      'Look at this project and tell me:\n' +
+      '1. What\'s unfinished — any incomplete features, placeholder content, TODO comments, or missing pages\n' +
+      '2. What\'s broken — run the build, check for errors, test all links and forms\n' +
+      '3. What needs my input — decisions only I can make (content, branding, credentials, business logic)\n' +
+      '4. What you can do right now without me — list these so I can tell you to go ahead\n' +
+      '5. What\'s blocking launch — the critical path items that must be done before this goes live\n\n' +
+      'Prioritize by impact. Be specific, not vague.'
+    )
+  }, [sendMessage])
+
+  const handleClientReady = useCallback(() => {
+    sendMessage(
+      'Is this project ready to hand to a client? Run through this checklist:\n' +
+      '1. All navigation links work and point to real pages\n' +
+      '2. All forms submit correctly (test the action/endpoint)\n' +
+      '3. All images load (no broken URLs or placeholders left)\n' +
+      '4. Fully responsive — looks good at 375px, 768px, 1024px, 1440px\n' +
+      '5. Favicon and Open Graph images set\n' +
+      '6. Analytics configured (Google Analytics, Google Tag Manager, or equivalent)\n' +
+      '7. Domain/DNS ready — document what needs to be pointed where\n' +
+      '8. SSL/HTTPS enforced\n' +
+      '9. Legal pages present (Privacy Policy, Terms of Service) or placeholders with clear instructions\n' +
+      '10. Contact info correct (phone, email, address)\n' +
+      '11. Loading speed acceptable — no massive unoptimized images or blocking scripts\n' +
+      '12. 404 page exists\n\n' +
+      'For each item: PASS, FAIL (with fix), or NEEDS CLIENT INPUT. Fix everything you can.'
+    )
+  }, [sendMessage])
+
+  const handleDeploy = useCallback(() => {
+    sendMessage(
+      'Deploy this Next.js project to Cloudflare:\n' +
+      '1. Determine if this needs Cloudflare Pages or Workers — check for API routes, SSR, middleware, server actions\n' +
+      '2. Set up or verify wrangler.toml / wrangler.jsonc with the right compatibility flags and Node.js compat\n' +
+      '3. Configure R2 bucket if the project needs file storage or large static assets\n' +
+      '4. List every environment variable and secret that needs to be set in the Cloudflare dashboard\n' +
+      '5. Check for Node.js APIs that won\'t work in Workers runtime and fix them\n' +
+      '6. Set up the build command and output directory correctly\n' +
+      '7. Give me the exact commands: wrangler login, wrangler pages deploy, or wrangler deploy\n\n' +
+      'If there are DNS steps needed, include those too.'
     )
   }, [sendMessage])
 
   const handleExplain = useCallback(() => {
     sendMessage('Explain what you just did — walk me through the changes, why you made them, and how they work together.')
-  }, [sendMessage])
-
-  const handleCleanUp = useCallback(() => {
-    sendMessage(
-      'Do a thorough cleanup pass on the codebase:\n' +
-      '1. Remove ALL unused imports and variables across every file\n' +
-      '2. Delete dead code, commented-out blocks, and stale TODO comments\n' +
-      '3. Consolidate duplicate logic into shared utilities where it makes sense\n' +
-      '4. Simplify overly complex conditionals and nested ternaries\n' +
-      '5. Ensure consistent formatting, naming conventions, and file organization\n' +
-      '6. Run the build after to confirm nothing broke\n\n' +
-      'Keep it lean — if it\'s not actively used, it goes.'
-    )
-  }, [sendMessage])
-
-  const handleWriteTests = useCallback(() => {
-    sendMessage('Write tests for the code you just created or modified. Cover the key functionality, edge cases, and failure scenarios.')
-  }, [sendMessage])
-
-  const handleSummarize = useCallback(() => {
-    sendMessage('Summarize everything we\'ve done in this session — what changed, what was built, what decisions were made, and what\'s left to do.')
-  }, [sendMessage])
-
-  const handleDeploy = useCallback(() => {
-    sendMessage(
-      'Help me deploy this Next.js project to Cloudflare:\n' +
-      '1. Check if this needs Cloudflare Pages or Workers — inspect for server-side features (API routes, SSR, middleware)\n' +
-      '2. Set up or verify wrangler.toml / wrangler.jsonc config\n' +
-      '3. Configure R2 bucket if the project uses file storage or static assets that need a CDN\n' +
-      '4. Set up environment variables and secrets (list exactly what needs to be configured)\n' +
-      '5. Check the build output is compatible — fix any Node.js APIs that don\'t work in Workers runtime\n' +
-      '6. Give me the exact deployment commands to run\n\n' +
-      'Make sure everything is production-ready before we deploy.'
-    )
   }, [sendMessage])
 
   const handleAttachFile = useCallback(async () => {
@@ -437,68 +467,68 @@ export default function App() {
                 >
                   <FastForward size={17} />
                 </button>
-                {/* r-2: Fix Errors */}
+                {/* r-2: Agent Prompt */}
                 <button
                   className="stack-btn-r stack-btn-r-2 glass-surface"
-                  title="Fix Errors"
-                  onClick={handleFixErrors}
+                  title="Agent Prompt"
+                  onClick={handleAgentPrompt}
                   disabled={isRunning}
                 >
-                  <Bug size={17} />
+                  <Robot size={17} />
                 </button>
-                {/* r-3: Review Code */}
+                {/* r-3: SEO Audit */}
                 <button
                   className="stack-btn-r stack-btn-r-3 glass-surface"
-                  title="Review Code"
-                  onClick={handleReviewCode}
+                  title="SEO Audit"
+                  onClick={handleSeoAudit}
                   disabled={isRunning}
                 >
-                  <Eye size={17} />
+                  <MagnifyingGlassPlus size={17} />
                 </button>
-                {/* r-4: Explain */}
+                {/* r-4: Performance */}
                 <button
                   className="stack-btn-r stack-btn-r-4 glass-surface"
+                  title="Performance"
+                  onClick={handlePerformance}
+                  disabled={isRunning}
+                >
+                  <Lightning size={17} />
+                </button>
+                {/* r-5: What's Next */}
+                <button
+                  className="stack-btn-r stack-btn-r-5 glass-surface"
+                  title="What's Next"
+                  onClick={handleWhatsNext}
+                  disabled={isRunning}
+                >
+                  <Notepad size={17} />
+                </button>
+                {/* r-6: Client Ready */}
+                <button
+                  className="stack-btn-r stack-btn-r-6 glass-surface"
+                  title="Client Ready"
+                  onClick={handleClientReady}
+                  disabled={isRunning}
+                >
+                  <Target size={17} />
+                </button>
+                {/* r-7: Deploy */}
+                <button
+                  className="stack-btn-r stack-btn-r-7 glass-surface"
+                  title="Deploy to Cloudflare"
+                  onClick={handleDeploy}
+                  disabled={isRunning}
+                >
+                  <CloudArrowUp size={17} />
+                </button>
+                {/* r-8: Explain (back) */}
+                <button
+                  className="stack-btn-r stack-btn-r-8 glass-surface"
                   title="Explain"
                   onClick={handleExplain}
                   disabled={isRunning}
                 >
                   <ChatText size={17} />
-                </button>
-                {/* r-5: Clean Up */}
-                <button
-                  className="stack-btn-r stack-btn-r-5 glass-surface"
-                  title="Clean Up"
-                  onClick={handleCleanUp}
-                  disabled={isRunning}
-                >
-                  <Broom size={17} />
-                </button>
-                {/* r-6: Write Tests */}
-                <button
-                  className="stack-btn-r stack-btn-r-6 glass-surface"
-                  title="Write Tests"
-                  onClick={handleWriteTests}
-                  disabled={isRunning}
-                >
-                  <Flask size={17} />
-                </button>
-                {/* r-7: Summarize */}
-                <button
-                  className="stack-btn-r stack-btn-r-7 glass-surface"
-                  title="Summarize"
-                  onClick={handleSummarize}
-                  disabled={isRunning}
-                >
-                  <Article size={17} />
-                </button>
-                {/* r-8: Deploy (back) */}
-                <button
-                  className="stack-btn-r stack-btn-r-8 glass-surface"
-                  title="Deploy"
-                  onClick={handleDeploy}
-                  disabled={isRunning}
-                >
-                  <CloudArrowUp size={17} />
                 </button>
               </div>
             </div>
