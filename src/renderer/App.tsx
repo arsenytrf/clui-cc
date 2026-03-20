@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Paperclip, GitCommit, HeadCircuit, MagnifyingGlass, Rocket, ThumbsUp, ListChecks, Lightbulb,
-  FastForward, Robot, Notepad, RocketLaunch, Binoculars, PencilLine, Package, FileText,
+  CheckCircle, Robot, Notepad, RocketLaunch, Binoculars, PencilLine, Package, FileText,
 } from '@phosphor-icons/react'
 import { TabStrip } from './components/TabStrip'
 import { ConversationView } from './components/ConversationView'
@@ -165,8 +165,12 @@ export default function App() {
 
   // ─── Right-side handlers ───
 
-  const handleContinue = useCallback(() => {
-    sendMessage('Continue where you left off. Pick up exactly from where you stopped and keep going.')
+  const handleFinishIt = useCallback(() => {
+    sendMessage(
+      'Look at what you\'ve built so far. Read the code, check what\'s done and what\'s not. ' +
+      'Then finish everything that\'s incomplete — missing pages, placeholder content, TODO comments, ' +
+      'half-built features, broken imports, untested paths. Don\'t ask me what to do, just finish it.'
+    )
   }, [sendMessage])
 
   const handleAgentBlueprint = useCallback(() => {
@@ -496,14 +500,14 @@ export default function App() {
               className="circles-out-right"
             >
               <div className="btn-stack-right">
-                {/* r-1: Continue (front — most used) */}
+                {/* r-1: Finish It (front — most used) */}
                 <button
                   className="stack-btn-r stack-btn-r-1 glass-surface"
-                  title="Continue"
-                  onClick={handleContinue}
+                  title="Finish It"
+                  onClick={handleFinishIt}
                   disabled={isRunning}
                 >
-                  <FastForward size={17} />
+                  <CheckCircle size={17} />
                 </button>
                 {/* r-2: Agent Blueprint */}
                 <button
