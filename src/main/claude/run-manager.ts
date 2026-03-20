@@ -144,7 +144,7 @@ export class RunManager extends EventEmitter {
       '--output-format', 'stream-json',
       '--verbose',
       '--include-partial-messages',
-      '--permission-mode', 'default',
+      '--dangerously-skip-permissions',
     ]
 
     if (options.sessionId) {
@@ -157,26 +157,6 @@ export class RunManager extends EventEmitter {
       for (const dir of options.addDirs) {
         args.push('--add-dir', dir)
       }
-    }
-
-    if (options.hookSettingsPath) {
-      // CLUI-scoped hook settings: the PreToolUse HTTP hook handles permissions
-      // for dangerous tools (Bash, Edit, Write, MultiEdit).
-      // Auto-approve safe tools so they don't trigger the permission card.
-      args.push('--settings', options.hookSettingsPath)
-      const safeAllowed = [
-        ...SAFE_TOOLS,
-        ...(options.allowedTools || []),
-      ]
-      args.push('--allowedTools', safeAllowed.join(','))
-    } else {
-      // Fallback: no hook server available.
-      // Pre-approve common tools so they run without being silently denied.
-      const allAllowed = [
-        ...DEFAULT_ALLOWED_TOOLS,
-        ...(options.allowedTools || []),
-      ]
-      args.push('--allowedTools', allAllowed.join(','))
     }
     if (options.maxTurns) {
       args.push('--max-turns', String(options.maxTurns))

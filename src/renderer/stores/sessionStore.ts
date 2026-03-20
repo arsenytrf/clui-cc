@@ -30,8 +30,8 @@ interface State {
   staticInfo: StaticInfo | null
   /** User's preferred model override (null = use default) */
   preferredModel: string | null
-  /** Global permission mode: 'ask' shows cards, 'auto' auto-approves all tool calls */
-  permissionMode: 'ask' | 'auto'
+  /** Permission mode — always auto (skip permissions) */
+  permissionMode: 'auto'
 
   // Marketplace state
   marketplaceOpen: boolean
@@ -46,7 +46,6 @@ interface State {
   // Actions
   initStaticInfo: () => Promise<void>
   setPreferredModel: (model: string | null) => void
-  setPermissionMode: (mode: 'ask' | 'auto') => void
   createTab: () => Promise<string>
   selectTab: (tabId: string) => void
   closeTab: (tabId: string) => void
@@ -127,7 +126,7 @@ export const useSessionStore = create<State>((set, get) => ({
   isExpanded: true,
   staticInfo: null,
   preferredModel: null,
-  permissionMode: 'ask',
+  permissionMode: 'auto',
 
   // Marketplace
   marketplaceOpen: false,
@@ -156,11 +155,6 @@ export const useSessionStore = create<State>((set, get) => ({
 
   setPreferredModel: (model) => {
     set({ preferredModel: model })
-  },
-
-  setPermissionMode: (mode) => {
-    set({ permissionMode: mode })
-    window.clui.setPermissionMode(mode)
   },
 
   createTab: async () => {
