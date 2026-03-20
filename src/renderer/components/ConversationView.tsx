@@ -88,18 +88,28 @@ export function ConversationView() {
     isNearBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 60
   }, [])
 
-  // Auto-scroll when content changes and user is near bottom.
+  // Auto-scroll: always snap to bottom on new messages; follow streaming only when near bottom.
   const msgCount = tab?.messages.length ?? 0
   const lastMsg = tab?.messages[tab.messages.length - 1]
   const permissionQueueLen = tab?.permissionQueue?.length ?? 0
   const queuedCount = tab?.queuedPrompts?.length ?? 0
-  const scrollTrigger = `${msgCount}:${lastMsg?.content?.length ?? 0}:${permissionQueueLen}:${queuedCount}`
+  const scrollTrigger = `${lastMsg?.content?.length ?? 0}:${permissionQueueLen}:${queuedCount}`
+  const prevMsgCountRef = useRef(msgCount)
 
   useEffect(() => {
-    if (isNearBottomRef.current && scrollRef.current) {
+    if (!scrollRef.current) return
+    // New message added (user sent or assistant started) — always scroll down
+    if (msgCount !== prevMsgCountRef.current) {
+      prevMsgCountRef.current = msgCount
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+      isNearBottomRef.current = true
+      return
+    }
+    // Streaming content update — only follow if already near bottom
+    if (isNearBottomRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight
     }
-  }, [scrollTrigger])
+  }, [msgCount, scrollTrigger])
 
   // Group only the visible slice of messages
   const allMessages = tab?.messages ?? []
