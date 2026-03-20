@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Paperclip, GitCommit, HeadCircuit, MagnifyingGlass, Rocket, ThumbsUp, ListChecks, Lightbulb,
-  CheckCircle, Robot, Notepad, RocketLaunch, Binoculars, PencilLine, Package, FileText,
+  FastForward, Robot, Notepad, RocketLaunch, Binoculars, PencilLine, Package, FileText,
 } from '@phosphor-icons/react'
 import { TabStrip } from './components/TabStrip'
 import { ConversationView } from './components/ConversationView'
@@ -165,35 +165,45 @@ export default function App() {
 
   // ─── Right-side handlers ───
 
-  const handleFinishIt = useCallback(() => {
-    sendMessage(
-      'Look at what you\'ve built so far. Read the code, check what\'s done and what\'s not. ' +
-      'Then finish everything that\'s incomplete — missing pages, placeholder content, TODO comments, ' +
-      'half-built features, broken imports, untested paths. Don\'t ask me what to do, just finish it.'
-    )
+  const handleContinue = useCallback(() => {
+    sendMessage('Continue where you left off. Pick up exactly from where you stopped and keep going.')
   }, [sendMessage])
 
   const handleAgentBlueprint = useCallback(() => {
     sendMessage(
-      'I need a browser agent prompt I can copy-paste into Claude Computer Use. Here\'s how to build it:\n\n' +
-      'STEP 1 — DISCOVER: Read the codebase and identify every task that requires manual browser action:\n' +
-      '- SEO submissions (Google Search Console, Bing Webmaster, sitemap)\n' +
-      '- Third-party service configuration (analytics, forms, DNS, email)\n' +
-      '- Directory listings, social profiles, business registrations\n' +
-      '- Content uploads, image sourcing, credential setup\n' +
-      '- Anything in the code that references an external service\n\n' +
-      'STEP 2 — RESEARCH: For each task, WebSearch the exact current procedure:\n' +
-      '- What\'s the URL to start?\n' +
-      '- What are the exact steps in 2025/2026?\n' +
-      '- Has the UI changed recently? What does the current flow look like?\n' +
-      '- Are there bulk/API options that would be faster?\n\n' +
-      'STEP 3 — BUILD THE PROMPT: Write a single, self-contained browser agent prompt with:\n' +
-      '- Task description (what we\'re accomplishing)\n' +
-      '- Pre-conditions (what accounts/access are needed)\n' +
-      '- Numbered steps with EXACT URLs, EXACT button text, EXACT form fields\n' +
-      '- Verification after each major action ("you should see X")\n' +
-      '- Error handling ("if you see Y instead, do Z")\n\n' +
-      'Output the prompt in a code block I can copy directly. No commentary outside the block.'
+      'I need a browser agent prompt I can copy-paste into Claude Computer Use.\n\n' +
+      'PHASE 1 — DISCOVER:\n' +
+      'Read the codebase. Identify every task that requires manual browser action — SEO submissions, DNS config, analytics setup, form backends, directory listings, content uploads, API key creation, social profiles. Check every config file, env reference, and third-party integration.\n\n' +
+      'PHASE 2 — RESEARCH:\n' +
+      'For each task you found, WebSearch the exact current procedure (UIs change frequently). Find the starting URL, the current step-by-step flow, and whether there are bulk/API shortcuts.\n\n' +
+      'PHASE 3 — BUILD THE PROMPT:\n' +
+      'Write the prompt using this exact structure (Anthropic\'s recommended format for Computer Use):\n\n' +
+      '```xml\n' +
+      '<task>\n' +
+      'One sentence: what you\'re doing and where.\n' +
+      '</task>\n\n' +
+      '<context>\n' +
+      'Business info, credentials, URLs — only what the agent needs.\n' +
+      '</context>\n\n' +
+      '<steps>\n' +
+      'Numbered sequential steps. Each step must:\n' +
+      '- State what to ACCOMPLISH (not what pixel to click)\n' +
+      '- Include exact text to type in form fields\n' +
+      '- Use keyboard shortcuts for dropdowns/date pickers (Tab, Enter, arrows — more reliable than mouse)\n' +
+      '- End critical steps with "Take a screenshot to verify this worked"\n' +
+      '- Include error handling: "If you see X instead, do Y"\n' +
+      '- One task flow at a time — complete one thing before starting the next\n' +
+      '</steps>\n\n' +
+      '<done>\n' +
+      'What the screen should look like when complete.\n' +
+      '</done>\n' +
+      '```\n\n' +
+      'RULES:\n' +
+      '- Keep each prompt under 500 words (longer = agent loses focus and skips steps)\n' +
+      '- If there are multiple unrelated tasks, output separate prompts for each\n' +
+      '- Include the actual data to enter (exact titles, URLs, descriptions) — don\'t leave blanks\n' +
+      '- Verification checkpoints after every critical action\n\n' +
+      'Output each prompt in a code block I can copy directly.'
     )
   }, [sendMessage])
 
@@ -500,14 +510,14 @@ export default function App() {
               className="circles-out-right"
             >
               <div className="btn-stack-right">
-                {/* r-1: Finish It (front — most used) */}
+                {/* r-1: Continue (front — most used) */}
                 <button
                   className="stack-btn-r stack-btn-r-1 glass-surface"
-                  title="Finish It"
-                  onClick={handleFinishIt}
+                  title="Continue"
+                  onClick={handleContinue}
                   disabled={isRunning}
                 >
-                  <CheckCircle size={17} />
+                  <FastForward size={17} />
                 </button>
                 {/* r-2: Agent Blueprint */}
                 <button
