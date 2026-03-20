@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Paperclip, GitCommit, HeadCircuit, MagnifyingGlass, Rocket, ThumbsUp, ListChecks, Lightbulb,
-  FastForward, Robot, Notepad, Brain, Warning, Sparkle, SealCheck, GraduationCap, Broom,
+  Robot, Notepad, Brain, Warning, Sparkle, SealCheck, GraduationCap, Broom,
 } from '@phosphor-icons/react'
 import { TabStrip } from './components/TabStrip'
 import { ConversationView } from './components/ConversationView'
@@ -165,10 +165,6 @@ export default function App() {
 
   // ─── Right-side handlers ───
 
-  const handleContinue = useCallback(() => {
-    sendMessage('Continue where you left off. Pick up exactly from where you stopped and keep going.')
-  }, [sendMessage])
-
   const handleAgentBlueprint = useCallback(() => {
     sendMessage(
       'I need a browser agent prompt I can copy-paste into Claude Computer Use.\n\n' +
@@ -272,20 +268,34 @@ export default function App() {
 
   const handleCleanHouse = useCallback(() => {
     sendMessage(
-      'Do a full project cleanup. Here\'s how:\n\n' +
-      '1. Read the entire project structure — every file, every folder\n' +
-      '2. Check what\'s actually imported and used vs what\'s just sitting there:\n' +
-      '   - Old files from a previous framework (HTML files in a Next.js project, old CSS in a Tailwind project, etc.)\n' +
-      '   - Components/pages that nothing imports or links to\n' +
-      '   - Images/assets in public/ that no code references\n' +
-      '   - Config files for tools we\'re not using\n' +
-      '   - node_modules dependencies in package.json that aren\'t imported anywhere\n' +
-      '   - Duplicate files (same component in two places)\n' +
-      '   - Empty files, placeholder files, temp files\n' +
-      '3. For each file you want to delete: verify it\'s truly unused by grepping for its name across the entire codebase\n' +
-      '4. Do NOT delete anything that might be important — .env files, configs, documentation, git files\n' +
-      '5. Delete the confirmed junk, run the build to make sure nothing broke\n\n' +
-      'Show me what you found and what you deleted.'
+      'Full codebase sweep. Work through each layer systematically:\n\n' +
+      'LAYER 1 — DEAD FILES:\n' +
+      'Read the entire project structure. For every source file, grep for its name/exports across the codebase.\n' +
+      'Find and remove:\n' +
+      '- Files from a previous framework (HTML in a Next.js project, old CSS in a Tailwind project, jQuery in a React project)\n' +
+      '- Components, pages, or utilities that nothing imports\n' +
+      '- Duplicate files (same component in two locations)\n' +
+      '- Empty files, placeholder files, temp files, .bak files\n\n' +
+      'LAYER 2 — DEAD CODE INSIDE FILES:\n' +
+      'For every remaining file, check for:\n' +
+      '- Unused imports (imported but never referenced in the file)\n' +
+      '- Unused variables, functions, and types that are defined but never called\n' +
+      '- Commented-out code blocks (if it\'s in git history, it doesn\'t need to be commented out)\n' +
+      '- console.log / console.debug statements left from debugging\n' +
+      '- TODO/FIXME comments that were already addressed\n' +
+      '- Unreachable code after return/throw statements\n\n' +
+      'LAYER 3 — DEAD DEPENDENCIES:\n' +
+      '- Read package.json. For each dependency, grep the src/ directory for its import. If nothing imports it, remove it.\n' +
+      '- Check for packages that could be replaced by native APIs (e.g., lodash for simple operations, moment.js when Intl.DateTimeFormat works)\n' +
+      '- Check for duplicate packages that do the same thing\n\n' +
+      'LAYER 4 — DEAD ASSETS:\n' +
+      '- Check every file in public/ and assets/. Grep for each filename across the codebase.\n' +
+      '- Remove images, fonts, and media files that no code references\n\n' +
+      'SAFETY RULES:\n' +
+      '- NEVER delete: .env files, .git, lock files, documentation (.md), config files that tools need\n' +
+      '- Remove in small batches — run the build after each batch to catch breakage early\n' +
+      '- If unsure whether something is used, grep for it first. If still unsure, leave it and flag it.\n\n' +
+      'Show me a summary: what you found, what you deleted, and what you flagged as "probably unused but verify."'
     )
   }, [sendMessage])
 
@@ -496,41 +506,41 @@ export default function App() {
               className="circles-out-right"
             >
               <div className="btn-stack-right">
-                {/* r-1: Continue (front) */}
+                {/* r-1: Agent Blueprint (front) */}
                 <button
                   className="stack-btn-r stack-btn-r-1 glass-surface"
-                  title="Continue"
-                  onClick={handleContinue}
-                  disabled={isRunning}
-                >
-                  <FastForward size={17} />
-                </button>
-                {/* r-2: Agent Blueprint */}
-                <button
-                  className="stack-btn-r stack-btn-r-2 glass-surface"
                   title="Agent Blueprint"
                   onClick={handleAgentBlueprint}
                   disabled={isRunning}
                 >
                   <Robot size={17} />
                 </button>
-                {/* r-3: What's Next */}
+                {/* r-2: What's Next */}
                 <button
-                  className="stack-btn-r stack-btn-r-3 glass-surface"
+                  className="stack-btn-r stack-btn-r-2 glass-surface"
                   title="What's Next"
                   onClick={handleWhatsNext}
                   disabled={isRunning}
                 >
                   <Notepad size={17} />
                 </button>
-                {/* r-4: Think For Me */}
+                {/* r-3: Think For Me */}
                 <button
-                  className="stack-btn-r stack-btn-r-4 glass-surface"
+                  className="stack-btn-r stack-btn-r-3 glass-surface"
                   title="Think For Me"
                   onClick={handleThinkForMe}
                   disabled={isRunning}
                 >
                   <Brain size={17} />
+                </button>
+                {/* r-4: Clean House */}
+                <button
+                  className="stack-btn-r stack-btn-r-4 glass-surface"
+                  title="Clean House"
+                  onClick={handleCleanHouse}
+                  disabled={isRunning}
+                >
+                  <Broom size={17} />
                 </button>
                 {/* r-5: Sanity Check */}
                 <button
@@ -541,36 +551,27 @@ export default function App() {
                 >
                   <Warning size={17} />
                 </button>
-                {/* r-6: Clean House */}
+                {/* r-6: Any More Ideas */}
                 <button
                   className="stack-btn-r stack-btn-r-6 glass-surface"
-                  title="Clean House"
-                  onClick={handleCleanHouse}
-                  disabled={isRunning}
-                >
-                  <Broom size={17} />
-                </button>
-                {/* r-7: Any More Ideas */}
-                <button
-                  className="stack-btn-r stack-btn-r-7 glass-surface"
                   title="Any More Ideas?"
                   onClick={handleAnyMoreIdeas}
                   disabled={isRunning}
                 >
                   <Sparkle size={17} />
                 </button>
-                {/* r-8: Prove It */}
+                {/* r-7: Prove It */}
                 <button
-                  className="stack-btn-r stack-btn-r-8 glass-surface"
+                  className="stack-btn-r stack-btn-r-7 glass-surface"
                   title="Prove It"
                   onClick={handleProveIt}
                   disabled={isRunning}
                 >
                   <SealCheck size={17} />
                 </button>
-                {/* r-9: Teach Me */}
+                {/* r-8: Teach Me */}
                 <button
-                  className="stack-btn-r stack-btn-r-9 glass-surface"
+                  className="stack-btn-r stack-btn-r-8 glass-surface"
                   title="Teach Me"
                   onClick={handleTeachMe}
                   disabled={isRunning}
