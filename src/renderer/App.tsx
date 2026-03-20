@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Paperclip, GitCommit, HeadCircuit, MagnifyingGlass, Rocket, ThumbsUp, ListChecks, Lightbulb,
-  FastForward, Robot, Notepad, Brain,
+  FastForward, Robot, Notepad, Brain, Warning,
 } from '@phosphor-icons/react'
 import { TabStrip } from './components/TabStrip'
 import { ConversationView } from './components/ConversationView'
@@ -243,6 +243,18 @@ export default function App() {
     )
   }, [sendMessage])
 
+  const handleSanityCheck = useCallback(() => {
+    sendMessage(
+      'Stop and double-check yourself before continuing:\n\n' +
+      '- Are you in the right project/repo? Read the package.json and confirm.\n' +
+      '- Are you editing the right files? Verify the paths match what we\'re working on.\n' +
+      '- Are your changes going to break anything that was already working?\n' +
+      '- Is your approach actually correct, or are you guessing?\n' +
+      '- Did you miss anything from what I asked?\n\n' +
+      'Take a step back, verify everything, and tell me if you need to course-correct.'
+    )
+  }, [sendMessage])
+
   const handleAttachFile = useCallback(async () => {
     const files = await window.clui.attachFiles()
     if (!files || files.length === 0) return
@@ -473,6 +485,15 @@ export default function App() {
                   disabled={isRunning}
                 >
                   <Brain size={17} />
+                </button>
+                {/* r-5: Sanity Check */}
+                <button
+                  className="stack-btn-r stack-btn-r-5 glass-surface"
+                  title="Sanity Check"
+                  onClick={handleSanityCheck}
+                  disabled={isRunning}
+                >
+                  <Warning size={17} />
                 </button>
               </div>
             </div>
