@@ -24,7 +24,7 @@ interface StaticInfo {
 interface State {
   tabs: TabState[]
   activeTabId: string
-  /** Global expand/collapse — user-controlled, not per-tab */
+  /** Always true — panel is always expanded */
   isExpanded: boolean
   /** Global info fetched on startup (not per-session) */
   staticInfo: StaticInfo | null
@@ -51,7 +51,7 @@ interface State {
   selectTab: (tabId: string) => void
   closeTab: (tabId: string) => void
   clearTab: () => void
-  toggleExpanded: () => void
+  renameTab: (tabId: string, title: string) => void
   toggleMarketplace: () => void
   closeMarketplace: () => void
   loadMarketplace: (forceRefresh?: boolean) => Promise<void>
@@ -124,7 +124,7 @@ const initialTab = makeLocalTab()
 export const useSessionStore = create<State>((set, get) => ({
   tabs: [initialTab],
   activeTabId: initialTab.id,
-  isExpanded: false,
+  isExpanded: true,
   staticInfo: null,
   preferredModel: null,
   permissionMode: 'ask',
@@ -191,15 +191,10 @@ export const useSessionStore = create<State>((set, get) => ({
   selectTab: (tabId) => {
     const s = get()
     if (tabId === s.activeTabId) {
-      // Clicking the already-active tab: toggle global expand/collapse
-      const willExpand = !s.isExpanded
+      // Already active — just clear unread
       set((prev) => ({
-        isExpanded: willExpand,
         marketplaceOpen: false,
-        // Expanding = reading: clear unread flag
-        tabs: willExpand
-          ? prev.tabs.map((t) => t.id === tabId ? { ...t, hasUnread: false } : t)
-          : prev.tabs,
+        tabs: prev.tabs.map((t) => t.id === tabId ? { ...t, hasUnread: false } : t),
       }))
     } else {
       // Switching to a different tab: mark as read
@@ -213,23 +208,10 @@ export const useSessionStore = create<State>((set, get) => ({
     }
   },
 
-  toggleExpanded: () => {
-    const { activeTabId, isExpanded } = get()
-    const willExpand = !isExpanded
-    set((s) => ({
-      isExpanded: willExpand,
-      marketplaceOpen: false,
-      // Expanding = reading: clear unread flag for the active tab
-      tabs: willExpand
-        ? s.tabs.map((t) => t.id === activeTabId ? { ...t, hasUnread: false } : t)
-        : s.tabs,
-    }))
-  },
-
   toggleMarketplace: () => {
     const s = get()
     if (s.marketplaceOpen) {
-      set({ marketplaceOpen: false })
+      set({ marketplaceOpen: false, isExpanded: true })
     } else {
       set({ isExpanded: false, marketplaceOpen: true })
       get().loadMarketplace()
@@ -237,7 +219,7 @@ export const useSessionStore = create<State>((set, get) => ({
   },
 
   closeMarketplace: () => {
-    set({ marketplaceOpen: false })
+    set({ marketplaceOpen: false, isExpanded: true })
   },
 
   loadMarketplace: async (forceRefresh) => {
@@ -347,6 +329,14 @@ export const useSessionStore = create<State>((set, get) => ({
           ? { ...t, messages: [], lastResult: null, currentActivity: '', permissionQueue: [], permissionDenied: null, queuedPrompts: [] }
           : t
       ),
+    }))
+  },
+
+  renameTab: (tabId, title) => {
+    const trimmed = title.trim()
+    if (!trimmed) return
+    set((s) => ({
+      tabs: s.tabs.map((t) => t.id === tabId ? { ...t, title: trimmed } : t),
     }))
   },
 

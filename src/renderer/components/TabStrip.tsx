@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, X } from '@phosphor-icons/react'
 import { useSessionStore } from '../stores/sessionStore'
@@ -36,6 +36,78 @@ function StatusDot({ status, hasUnread, hasPermission }: { status: TabStatus; ha
   )
 }
 
+function EditableTabTitle({
+  tabId,
+  title,
+  isActive,
+  colors,
+}: {
+  tabId: string
+  title: string
+  isActive: boolean
+  colors: ReturnType<typeof useColors>
+}) {
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState(title)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const renameTab = useSessionStore((s) => s.renameTab)
+
+  useEffect(() => {
+    if (editing && inputRef.current) {
+      inputRef.current.focus()
+      inputRef.current.select()
+    }
+  }, [editing])
+
+  const commit = () => {
+    const trimmed = draft.trim()
+    if (trimmed && trimmed !== title) {
+      renameTab(tabId, trimmed)
+    } else {
+      setDraft(title)
+    }
+    setEditing(false)
+  }
+
+  if (editing) {
+    return (
+      <input
+        ref={inputRef}
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={commit}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') commit()
+          if (e.key === 'Escape') { setDraft(title); setEditing(false) }
+        }}
+        onClick={(e) => e.stopPropagation()}
+        className="truncate flex-1 bg-transparent outline-none border-none p-0 m-0"
+        style={{
+          fontSize: 12,
+          color: colors.textPrimary,
+          fontWeight: 500,
+          width: '100%',
+          minWidth: 0,
+        }}
+      />
+    )
+  }
+
+  return (
+    <span
+      className="truncate flex-1"
+      onDoubleClick={(e) => {
+        e.stopPropagation()
+        setDraft(title)
+        setEditing(true)
+      }}
+      title="Double-click to rename"
+    >
+      {title}
+    </span>
+  )
+}
+
 export function TabStrip() {
   const tabs = useSessionStore((s) => s.tabs)
   const activeTabId = useSessionStore((s) => s.activeTabId)
@@ -57,10 +129,7 @@ export function TabStrip() {
           style={{
             scrollbarWidth: 'none',
             paddingLeft: 8,
-            // Extra right breathing room so clipped tabs fade out before the edge.
             paddingRight: 14,
-            // Right-only content fade so the parent card's own animated background
-            // shows through cleanly in both collapsed and expanded states.
             maskImage: 'linear-gradient(to right, black 0%, black calc(100% - 40px), transparent 100%)',
             WebkitMaskImage: 'linear-gradient(to right, black 0%, black calc(100% - 40px), transparent 100%)',
           }}
@@ -89,7 +158,7 @@ export function TabStrip() {
                   }}
                 >
                   <StatusDot status={tab.status} hasUnread={tab.hasUnread} hasPermission={tab.permissionQueue.length > 0} />
-                  <span className="truncate flex-1">{tab.title}</span>
+                  <EditableTabTitle tabId={tab.id} title={tab.title} isActive={isActive} colors={colors} />
                   {tabs.length > 1 && (
                     <button
                       onClick={(e) => { e.stopPropagation(); closeTab(tab.id) }}
