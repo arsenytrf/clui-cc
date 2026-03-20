@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Paperclip, GitCommit, HeadCircuit, MagnifyingGlass, Rocket } from '@phosphor-icons/react'
+import { Paperclip, GitCommit, HeadCircuit, MagnifyingGlass, Rocket, ThumbsUp, ListChecks } from '@phosphor-icons/react'
 import { TabStrip } from './components/TabStrip'
 import { ConversationView } from './components/ConversationView'
 import { InputBar } from './components/InputBar'
@@ -117,6 +117,21 @@ export default function App() {
       'Yes, that looks great — go ahead and implement everything you suggested. Be thorough, creative, and don\'t hold back. ' +
       'If you spot additional ways to improve things along the way, take them. ' +
       'I trust your judgment — make it the best it can be.'
+    )
+  }, [sendMessage])
+
+  const handleGreatJob = useCallback(() => {
+    sendMessage(
+      'That\'s exactly what I needed — great work! Keep this quality and approach going. ' +
+      'If there\'s anything you\'d refine or improve further, go for it.'
+    )
+  }, [sendMessage])
+
+  const handleRoadmap = useCallback(() => {
+    sendMessage(
+      'Give me a complete roadmap of everything I need to do or provide to make this project fully standalone and production-ready. ' +
+      'List every step, every asset I need to gather, every configuration I need to set up, and every decision I need to make. ' +
+      'Be specific — no vague steps. I want a clear numbered checklist I can work through one by one.'
     )
   }, [sendMessage])
 
@@ -277,7 +292,7 @@ export default function App() {
                 >
                   <MagnifyingGlass size={17} />
                 </button>
-                {/* btn-5: Go Ahead (back, leftmost) */}
+                {/* btn-5: Go Ahead */}
                 <button
                   className="stack-btn stack-btn-5 glass-surface"
                   title="Go Ahead"
@@ -285,6 +300,24 @@ export default function App() {
                   disabled={isRunning}
                 >
                   <Rocket size={17} />
+                </button>
+                {/* btn-6: Great Job */}
+                <button
+                  className="stack-btn stack-btn-6 glass-surface"
+                  title="Great Job"
+                  onClick={handleGreatJob}
+                  disabled={isRunning}
+                >
+                  <ThumbsUp size={17} />
+                </button>
+                {/* btn-7: Roadmap (back, leftmost) */}
+                <button
+                  className="stack-btn stack-btn-7 glass-surface"
+                  title="Roadmap"
+                  onClick={handleRoadmap}
+                  disabled={isRunning}
+                >
+                  <ListChecks size={17} />
                 </button>
               </div>
             </div>
