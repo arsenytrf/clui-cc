@@ -1,6 +1,9 @@
 import React, { useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Paperclip, GitCommit, HeadCircuit, MagnifyingGlass, Rocket, ThumbsUp, ListChecks, Lightbulb } from '@phosphor-icons/react'
+import {
+  Paperclip, GitCommit, HeadCircuit, MagnifyingGlass, Rocket, ThumbsUp, ListChecks, Lightbulb,
+  FastForward, Bug, Eye, ChatText, Broom, Flask, Article, CloudArrowUp,
+} from '@phosphor-icons/react'
 import { TabStrip } from './components/TabStrip'
 import { ConversationView } from './components/ConversationView'
 import { InputBar } from './components/InputBar'
@@ -158,6 +161,40 @@ export default function App() {
       '   - Any red flags, tech debt, or security concerns\n\n' +
       'Don\'t summarize — read the actual code. I want you to know this project as well as I do before we touch anything.'
     )
+  }, [sendMessage])
+
+  // ─── Right-side handlers ───
+
+  const handleContinue = useCallback(() => {
+    sendMessage('Continue where you left off. Pick up exactly from where you stopped and keep going.')
+  }, [sendMessage])
+
+  const handleFixErrors = useCallback(() => {
+    sendMessage('Run the build and fix any errors. Check for TypeScript issues, missing imports, broken references, and anything that prevents a clean build.')
+  }, [sendMessage])
+
+  const handleReviewCode = useCallback(() => {
+    sendMessage('Review the recent changes for code quality, potential bugs, performance issues, and anything you\'d improve. Be specific and actionable.')
+  }, [sendMessage])
+
+  const handleExplain = useCallback(() => {
+    sendMessage('Explain what you just did — walk me through the changes, why you made them, and how they work together.')
+  }, [sendMessage])
+
+  const handleCleanUp = useCallback(() => {
+    sendMessage('Clean up and simplify the code. Remove dead code, unnecessary complexity, redundant logic, and anything that doesn\'t need to be there. Keep it lean.')
+  }, [sendMessage])
+
+  const handleWriteTests = useCallback(() => {
+    sendMessage('Write tests for the code you just created or modified. Cover the key functionality, edge cases, and failure scenarios.')
+  }, [sendMessage])
+
+  const handleSummarize = useCallback(() => {
+    sendMessage('Summarize everything we\'ve done in this session — what changed, what was built, what decisions were made, and what\'s left to do.')
+  }, [sendMessage])
+
+  const handleDeploy = useCallback(() => {
+    sendMessage('Help me deploy this project. Walk me through the steps, check the config, and make sure everything is production-ready.')
   }, [sendMessage])
 
   const handleAttachFile = useCallback(async () => {
@@ -347,6 +384,87 @@ export default function App() {
               style={{ minHeight: 50, borderRadius: 25, padding: '0 6px 0 16px', background: colors.inputPillBg }}
             >
               <InputBar />
+            </div>
+
+            {/* Right-side stacked circle buttons */}
+            <div
+              data-clui-ui
+              className="circles-out-right"
+            >
+              <div className="btn-stack-right">
+                {/* r-1: Continue (front — most used) */}
+                <button
+                  className="stack-btn-r stack-btn-r-1 glass-surface"
+                  title="Continue"
+                  onClick={handleContinue}
+                  disabled={isRunning}
+                >
+                  <FastForward size={17} />
+                </button>
+                {/* r-2: Fix Errors */}
+                <button
+                  className="stack-btn-r stack-btn-r-2 glass-surface"
+                  title="Fix Errors"
+                  onClick={handleFixErrors}
+                  disabled={isRunning}
+                >
+                  <Bug size={17} />
+                </button>
+                {/* r-3: Review Code */}
+                <button
+                  className="stack-btn-r stack-btn-r-3 glass-surface"
+                  title="Review Code"
+                  onClick={handleReviewCode}
+                  disabled={isRunning}
+                >
+                  <Eye size={17} />
+                </button>
+                {/* r-4: Explain */}
+                <button
+                  className="stack-btn-r stack-btn-r-4 glass-surface"
+                  title="Explain"
+                  onClick={handleExplain}
+                  disabled={isRunning}
+                >
+                  <ChatText size={17} />
+                </button>
+                {/* r-5: Clean Up */}
+                <button
+                  className="stack-btn-r stack-btn-r-5 glass-surface"
+                  title="Clean Up"
+                  onClick={handleCleanUp}
+                  disabled={isRunning}
+                >
+                  <Broom size={17} />
+                </button>
+                {/* r-6: Write Tests */}
+                <button
+                  className="stack-btn-r stack-btn-r-6 glass-surface"
+                  title="Write Tests"
+                  onClick={handleWriteTests}
+                  disabled={isRunning}
+                >
+                  <Flask size={17} />
+                </button>
+                {/* r-7: Summarize */}
+                <button
+                  className="stack-btn-r stack-btn-r-7 glass-surface"
+                  title="Summarize"
+                  onClick={handleSummarize}
+                  disabled={isRunning}
+                >
+                  <Article size={17} />
+                </button>
+                {/* r-8: Deploy (back) */}
+                <button
+                  className="stack-btn-r stack-btn-r-8 glass-surface"
+                  title="Deploy"
+                  onClick={handleDeploy}
+                  disabled={isRunning}
+                >
+                  <CloudArrowUp size={17} />
+                </button>
+              </div>
             </div>
           </div>
         </div>
