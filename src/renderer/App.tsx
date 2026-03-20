@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Paperclip, GitCommit, HeadCircuit, MagnifyingGlass } from '@phosphor-icons/react'
+import { Paperclip, GitCommit, HeadCircuit, MagnifyingGlass, Rocket } from '@phosphor-icons/react'
 import { TabStrip } from './components/TabStrip'
 import { ConversationView } from './components/ConversationView'
 import { InputBar } from './components/InputBar'
@@ -110,6 +110,14 @@ export default function App() {
 
   const handleCommitPush = useCallback(() => {
     sendMessage('Commit all current changes with a descriptive commit message, then push to the remote repository.')
+  }, [sendMessage])
+
+  const handleProceed = useCallback(() => {
+    sendMessage(
+      'Yes, that looks great — go ahead and implement everything you suggested. Be thorough, creative, and don\'t hold back. ' +
+      'If you spot additional ways to improve things along the way, take them. ' +
+      'I trust your judgment — make it the best it can be.'
+    )
   }, [sendMessage])
 
   const handleProjectRecon = useCallback(() => {
@@ -260,7 +268,7 @@ export default function App() {
                 >
                   <HeadCircuit size={17} />
                 </button>
-                {/* btn-4: Project Recon (back, leftmost) */}
+                {/* btn-4: Project Recon */}
                 <button
                   className="stack-btn stack-btn-4 glass-surface"
                   title="Project Recon"
@@ -268,6 +276,15 @@ export default function App() {
                   disabled={isRunning}
                 >
                   <MagnifyingGlass size={17} />
+                </button>
+                {/* btn-5: Go Ahead (back, leftmost) */}
+                <button
+                  className="stack-btn stack-btn-5 glass-surface"
+                  title="Go Ahead"
+                  onClick={handleProceed}
+                  disabled={isRunning}
+                >
+                  <Rocket size={17} />
                 </button>
               </div>
             </div>
