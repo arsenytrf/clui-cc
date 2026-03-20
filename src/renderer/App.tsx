@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Paperclip, GitCommit, HeadCircuit, MagnifyingGlass, Rocket, ThumbsUp, ListChecks, Lightbulb,
-  FastForward, Robot, Notepad,
+  FastForward, Robot, Notepad, Brain,
 } from '@phosphor-icons/react'
 import { TabStrip } from './components/TabStrip'
 import { ConversationView } from './components/ConversationView'
@@ -216,6 +216,17 @@ export default function App() {
       '4. What you can do right now without me — list these so I can tell you to go ahead\n' +
       '5. What\'s blocking launch — the critical path items that must be done before this goes live\n\n' +
       'Prioritize by impact. Be specific, not vague.'
+    )
+  }, [sendMessage])
+
+  const handleThinkForMe = useCallback(() => {
+    sendMessage(
+      'I need you to think for me right now. Here\'s what to do:\n\n' +
+      '1. Read the entire project — understand what it is, who it\'s for, and where it\'s at\n' +
+      '2. WebSearch for what real users and customers in this space actually struggle with — forums, Reddit, reviews, Twitter. Find the real pain points, not assumptions\n' +
+      '3. Look at what\'s missing, what\'s broken, what\'s half-done, and what could be way better\n' +
+      '4. Come back with a prioritized list of the highest-impact things to do next — with your reasoning for each one\n\n' +
+      'Don\'t ask me questions. Don\'t wait for input. Just think, research, and tell me what to do. I trust you.'
     )
   }, [sendMessage])
 
@@ -440,6 +451,15 @@ export default function App() {
                   disabled={isRunning}
                 >
                   <Notepad size={17} />
+                </button>
+                {/* r-4: Think For Me */}
+                <button
+                  className="stack-btn-r stack-btn-r-4 glass-surface"
+                  title="Think For Me"
+                  onClick={handleThinkForMe}
+                  disabled={isRunning}
+                >
+                  <Brain size={17} />
                 </button>
               </div>
             </div>
