@@ -140,10 +140,10 @@ export default function App() {
 
   const handleBrainstorm = useCallback(() => {
     sendMessage(
-      'Look at this project with fresh eyes. Search the web for what competitors and similar tools are doing, ' +
-      'then suggest specific improvements, new features, and changes that would make this project stand out. ' +
-      'Be specific — show me what others have that we don\'t, what we could do better, and any quick wins I\'m missing. ' +
-      'Prioritize the suggestions by impact.'
+      'Let\'s brainstorm. Look at what we\'re building, think about where it could go, and ask me questions. ' +
+      'What\'s the vision I haven\'t told you yet? What problems am I probably running into? What would make this 10x better? ' +
+      'Don\'t just list ideas — have a conversation with me. Ask me what I think, challenge my assumptions, ' +
+      'and build on my answers. Let\'s think bigger together.'
     )
   }, [sendMessage])
 
