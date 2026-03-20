@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Paperclip, GitCommit, HeadCircuit, MagnifyingGlass, Rocket, ThumbsUp, ListChecks, Lightbulb,
-  FastForward, Robot, Notepad, RocketLaunch, Binoculars, PencilLine, Package, FileText,
+  FastForward, Robot, Notepad,
 } from '@phosphor-icons/react'
 import { TabStrip } from './components/TabStrip'
 import { ConversationView } from './components/ConversationView'
@@ -219,102 +219,6 @@ export default function App() {
     )
   }, [sendMessage])
 
-  const handleShipIt = useCallback(() => {
-    sendMessage(
-      'Get this project live. Full launch sequence:\n\n' +
-      'PHASE 1 — PRE-FLIGHT:\n' +
-      '- Run the build. Fix every error. Zero warnings.\n' +
-      '- Check every route renders. Check every form submits. Check every image loads.\n' +
-      '- Check mobile at 375px. Check tablet at 768px. Fix anything broken.\n' +
-      '- Verify favicon, OG images, meta descriptions on every page.\n\n' +
-      'PHASE 2 — CLOUDFLARE SETUP:\n' +
-      '- Determine Pages vs Workers (check for SSR/API routes/middleware)\n' +
-      '- Set up or verify wrangler config with correct compatibility flags\n' +
-      '- Configure R2 if needed for file storage\n' +
-      '- List every env var and secret needed in the Cloudflare dashboard\n' +
-      '- Fix any Node.js APIs incompatible with Workers runtime\n' +
-      '- Give me the exact deploy commands\n\n' +
-      'PHASE 3 — POST-DEPLOY:\n' +
-      '- Generate a browser agent prompt for: DNS pointing, Google Search Console setup + sitemap submission, Google Analytics/GTM installation, Bing Webmaster submission\n' +
-      '- Format the agent prompt in a code block I can copy into Claude Computer Use\n\n' +
-      'Don\'t skip steps. Don\'t summarize. Execute each phase.'
-    )
-  }, [sendMessage])
-
-  const handleCompetitorIntel = useCallback(() => {
-    sendMessage(
-      'Do real competitive research for this project:\n\n' +
-      'STEP 1: Read the codebase to understand what this business does, what industry it\'s in, and where it\'s located.\n\n' +
-      'STEP 2: WebSearch for the top 5 competitors in this niche + location. Then WebFetch their actual websites.\n\n' +
-      'STEP 3: For each competitor, document:\n' +
-      '- What they do better than us (design, copy, features, UX)\n' +
-      '- What specific features they have that we don\'t\n' +
-      '- How their SEO is set up (check their page titles, meta, structured data)\n' +
-      '- What their pricing/CTA strategy looks like\n' +
-      '- What review sites they\'re listed on and their ratings\n\n' +
-      'STEP 4: Based on the research, give me a prioritized list of specific changes to make — not generic advice, but "add X feature like competitor Y does it" or "rewrite the hero like Z because their conversion copy is stronger."\n\n' +
-      'Show your work — include URLs and screenshots of what you found.'
-    )
-  }, [sendMessage])
-
-  const handleContentOverhaul = useCallback(() => {
-    sendMessage(
-      'Audit and rewrite every piece of content in this project:\n\n' +
-      'STEP 1: Read every page. Flag every headline, paragraph, CTA, and image alt tag that sounds generic, AI-generated, or placeholder-like.\n\n' +
-      'STEP 2: WebSearch for real customer reviews, Reddit threads, and forum posts from this industry. Collect the exact words real customers use to describe their problems, fears, and what they care about.\n\n' +
-      'STEP 3: Rewrite every flagged piece of content using the real customer language you found. Rules:\n' +
-      '- Headlines must pass the "so what?" test\n' +
-      '- Stats over adjectives ("4.9★ from 127 reviews" not "highly rated")\n' +
-      '- Lead with the customer\'s pain, not the company\'s pride\n' +
-      '- CTAs must be specific ("Get Your Free Quote in 2 Hours" not "Contact Us")\n' +
-      '- Localize everything — reference real neighborhoods, weather, landmarks\n\n' +
-      'STEP 4: Check every image. Flag broken URLs, placeholder images, and images that don\'t match the industry. WebSearch for replacements on Unsplash/Pexels with specific queries. Verify URLs work.\n\n' +
-      'Make all the changes directly in the code.'
-    )
-  }, [sendMessage])
-
-  const handleStackAudit = useCallback(() => {
-    sendMessage(
-      'Audit every dependency and tool in this project:\n\n' +
-      'STEP 1: Read package.json. For each dependency, WebSearch for:\n' +
-      '- Current latest version vs what we have\n' +
-      '- Any known security advisories or breaking changes\n' +
-      '- Whether a better/lighter alternative exists now\n\n' +
-      'STEP 2: Check the codebase for:\n' +
-      '- Dependencies in package.json that aren\'t actually imported anywhere (remove them)\n' +
-      '- Packages that are imported but could be replaced with native APIs\n' +
-      '- Outdated patterns (old React patterns, deprecated APIs, etc.)\n\n' +
-      'STEP 3: Run the build. Check for deprecation warnings, TypeScript issues, and unused code.\n\n' +
-      'STEP 4: Update what\'s safe to update. For breaking changes, tell me what would break and whether it\'s worth it.\n\n' +
-      'Show a before/after table: package, old version, new version, and why.'
-    )
-  }, [sendMessage])
-
-  const handleHandoff = useCallback(() => {
-    sendMessage(
-      'Generate a complete client handoff document for this project. Read the entire codebase first, then produce:\n\n' +
-      '## Project Overview\n' +
-      '- What was built, tech stack, architecture summary\n\n' +
-      '## How to Update Content\n' +
-      '- Where text/copy lives in the code (exact file paths)\n' +
-      '- Where images are stored and how to replace them\n' +
-      '- How to add/remove services, team members, gallery items\n\n' +
-      '## Environment & Deployment\n' +
-      '- Where it\'s hosted and how to access the dashboard\n' +
-      '- How to deploy changes (exact commands)\n' +
-      '- All environment variables and what they do\n' +
-      '- Domain/DNS configuration\n\n' +
-      '## Accounts & Services\n' +
-      '- Every third-party service the site depends on (analytics, forms, CDN, etc.)\n' +
-      '- What credentials are needed for each\n\n' +
-      '## Maintenance\n' +
-      '- How to update dependencies\n' +
-      '- What to check if something breaks\n' +
-      '- Contact info for ongoing support\n\n' +
-      'Write it as a clean markdown document the client can actually follow. Save it as HANDOFF.md in the project root.'
-    )
-  }, [sendMessage])
-
   const handleAttachFile = useCallback(async () => {
     const files = await window.clui.attachFiles()
     if (!files || files.length === 0) return
@@ -510,7 +414,7 @@ export default function App() {
               className="circles-out-right"
             >
               <div className="btn-stack-right">
-                {/* r-1: Continue (front — most used) */}
+                {/* r-1: Continue (front) */}
                 <button
                   className="stack-btn-r stack-btn-r-1 glass-surface"
                   title="Continue"
@@ -536,51 +440,6 @@ export default function App() {
                   disabled={isRunning}
                 >
                   <Notepad size={17} />
-                </button>
-                {/* r-4: Ship It */}
-                <button
-                  className="stack-btn-r stack-btn-r-4 glass-surface"
-                  title="Ship It"
-                  onClick={handleShipIt}
-                  disabled={isRunning}
-                >
-                  <RocketLaunch size={17} />
-                </button>
-                {/* r-5: Competitor Intel */}
-                <button
-                  className="stack-btn-r stack-btn-r-5 glass-surface"
-                  title="Competitor Intel"
-                  onClick={handleCompetitorIntel}
-                  disabled={isRunning}
-                >
-                  <Binoculars size={17} />
-                </button>
-                {/* r-6: Content Overhaul */}
-                <button
-                  className="stack-btn-r stack-btn-r-6 glass-surface"
-                  title="Content Overhaul"
-                  onClick={handleContentOverhaul}
-                  disabled={isRunning}
-                >
-                  <PencilLine size={17} />
-                </button>
-                {/* r-7: Stack Audit */}
-                <button
-                  className="stack-btn-r stack-btn-r-7 glass-surface"
-                  title="Stack Audit"
-                  onClick={handleStackAudit}
-                  disabled={isRunning}
-                >
-                  <Package size={17} />
-                </button>
-                {/* r-8: Client Handoff (back) */}
-                <button
-                  className="stack-btn-r stack-btn-r-8 glass-surface"
-                  title="Client Handoff"
-                  onClick={handleHandoff}
-                  disabled={isRunning}
-                >
-                  <FileText size={17} />
                 </button>
               </div>
             </div>
