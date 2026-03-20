@@ -429,10 +429,23 @@ ipcMain.handle(IPC.LOAD_SESSION, async (_e, arg: { sessionId: string; projectPat
   const projectPath = typeof arg === 'string' ? undefined : arg.projectPath
   log(`IPC LOAD_SESSION ${sessionId}${projectPath ? ` (path=${projectPath})` : ''}`)
   try {
-    const cwd = projectPath || process.cwd()
+    // Try the expected path first, then search all project directories
+    const cwd = projectPath === '~' ? homedir() : (projectPath || process.cwd())
     const encodedPath = cwd.replace(/\//g, '-')
-    const filePath = join(homedir(), '.claude', 'projects', encodedPath, `${sessionId}.jsonl`)
-    if (!existsSync(filePath)) return []
+    let filePath = join(homedir(), '.claude', 'projects', encodedPath, `${sessionId}.jsonl`)
+    if (!existsSync(filePath)) {
+      // Fallback: search all project directories for this session ID
+      const projectsRoot = join(homedir(), '.claude', 'projects')
+      if (!existsSync(projectsRoot)) return []
+      const found = readdirSync(projectsRoot).find((d: string) => {
+        try {
+          return statSync(join(projectsRoot, d)).isDirectory() &&
+            existsSync(join(projectsRoot, d, `${sessionId}.jsonl`))
+        } catch { return false }
+      })
+      if (!found) return []
+      filePath = join(projectsRoot, found, `${sessionId}.jsonl`)
+    }
 
     const messages: Array<{ role: string; content: string; toolName?: string; timestamp: number }> = []
     await new Promise<void>((resolve) => {
