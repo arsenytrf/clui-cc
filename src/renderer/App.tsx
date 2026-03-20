@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Paperclip, Camera, HeadCircuit } from '@phosphor-icons/react'
+import { Paperclip, GitCommit, HeadCircuit } from '@phosphor-icons/react'
 import { TabStrip } from './components/TabStrip'
 import { ConversationView } from './components/ConversationView'
 import { InputBar } from './components/InputBar'
@@ -106,11 +106,11 @@ export default function App() {
   const cardCollapsedMargin = 15
   const bodyMaxHeight = fullHeight ? 520 : 400
 
-  const handleScreenshot = useCallback(async () => {
-    const result = await window.clui.takeScreenshot()
-    if (!result) return
-    addAttachments([result])
-  }, [addAttachments])
+  const sendMessage = useSessionStore((s) => s.sendMessage)
+
+  const handleCommitPush = useCallback(() => {
+    sendMessage('Commit all current changes with a descriptive commit message, then push to the remote repository.')
+  }, [sendMessage])
 
   const handleAttachFile = useCallback(async () => {
     const files = await window.clui.attachFiles()
@@ -226,14 +226,14 @@ export default function App() {
                 >
                   <Paperclip size={17} />
                 </button>
-                {/* btn-2: Screenshot (middle) */}
+                {/* btn-2: Commit & Push */}
                 <button
                   className="stack-btn stack-btn-2 glass-surface"
-                  title="Take screenshot"
-                  onClick={handleScreenshot}
+                  title="Commit & Push"
+                  onClick={handleCommitPush}
                   disabled={isRunning}
                 >
-                  <Camera size={17} />
+                  <GitCommit size={17} />
                 </button>
                 {/* btn-3: Skills (back, leftmost) */}
                 <button

@@ -5,7 +5,7 @@ import remarkGfm from 'remark-gfm'
 import {
   FileText, PencilSimple, FileArrowUp, Terminal, MagnifyingGlass, Globe,
   Robot, Question, Wrench, FolderOpen, Copy, Check, CaretRight, CaretDown,
-  SpinnerGap, ArrowCounterClockwise, Square,
+  SpinnerGap, ArrowCounterClockwise,
 } from '@phosphor-icons/react'
 import { useSessionStore } from '../stores/sessionStore'
 import { PermissionCard } from './PermissionCard'
@@ -134,7 +134,6 @@ export function ConversationView() {
   const isRunning = tab.status === 'running' || tab.status === 'connecting'
   const isDead = tab.status === 'dead'
   const isFailed = tab.status === 'failed'
-  const showInterrupt = isRunning && tab.messages.some((m) => m.role === 'user')
 
   if (tab.messages.length === 0) {
     return <EmptyState />
@@ -278,14 +277,7 @@ export function ConversationView() {
           )}
         </div>
 
-        {/* Right: interrupt button when running */}
-        <div className="flex items-center flex-shrink-0">
-          <AnimatePresence>
-            {showInterrupt && (
-              <InterruptButton tabId={tab.id} />
-            )}
-          </AnimatePresence>
-        </div>
+        <div className="flex items-center flex-shrink-0" />
       </div>
     </div>
   )
@@ -360,38 +352,6 @@ function CopyButton({ text }: { text: string }) {
     >
       {copied ? <Check size={11} /> : <Copy size={11} />}
       <span>{copied ? 'Copied' : 'Copy'}</span>
-    </motion.button>
-  )
-}
-
-// ─── Interrupt Button ───
-
-function InterruptButton({ tabId }: { tabId: string }) {
-  const colors = useColors()
-
-  const handleStop = () => {
-    window.clui.stopTab(tabId)
-  }
-
-  return (
-    <motion.button
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.12 }}
-      onClick={handleStop}
-      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[11px] cursor-pointer flex-shrink-0 transition-colors"
-      style={{
-        background: 'transparent',
-        color: colors.statusError,
-        border: 'none',
-      }}
-      onMouseEnter={(e) => { e.currentTarget.style.background = colors.statusErrorBg }}
-      onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
-      title="Stop current task"
-    >
-      <Square size={9} weight="fill" />
-      <span>Interrupt</span>
     </motion.button>
   )
 }

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Terminal, CaretDown, Check, FolderOpen, Plus, X } from '@phosphor-icons/react'
+import { Square, CaretDown, Check, FolderOpen, Plus, X } from '@phosphor-icons/react'
 import { useSessionStore, AVAILABLE_MODELS } from '../stores/sessionStore'
 import { usePopoverLayer } from './PopoverLayer'
 import { useColors } from '../theme'
@@ -178,8 +178,8 @@ export function StatusBar() {
   const isEmpty = tab.messages.length === 0
   const hasExtraDirs = tab.additionalDirs.length > 0
 
-  const handleOpenInTerminal = () => {
-    window.clui.openInTerminal(tab.claudeSessionId, tab.workingDirectory)
+  const handleStop = () => {
+    window.clui.stopTab(tab.id)
   }
 
   const handleDirClick = () => {
@@ -313,17 +313,19 @@ export function StatusBar() {
         <ModelPicker />
       </div>
 
-      {/* Right — Open in CLI */}
+      {/* Right — Interrupt */}
       <div className="flex items-center gap-1.5 flex-shrink-0">
-        <button
-          onClick={handleOpenInTerminal}
-          className="flex items-center gap-1 text-[11px] rounded-full px-2 py-0.5 transition-colors"
-          style={{ color: colors.textTertiary }}
-          title="Open this session in Terminal"
-        >
-          Open in CLI
-          <Terminal size={11} />
-        </button>
+        {isRunning && (
+          <button
+            onClick={handleStop}
+            className="flex items-center gap-1 text-[11px] rounded-full px-2 py-0.5 transition-colors"
+            style={{ color: colors.statusError }}
+            title="Stop current task"
+          >
+            <Square size={9} weight="fill" />
+            Interrupt
+          </button>
+        )}
       </div>
     </div>
   )
