@@ -195,18 +195,8 @@ export default function App() {
     )
   }, [sendMessage])
 
-  const handleMakeItHappen = useCallback(() => {
-    sendMessage(
-      'Take everything you just recommended and turn each browser task into an executable prompt for Claude Computer Use.\n\n' +
-      'For each task, use this formula:\n' +
-      '```\n' +
-      '<task> What + where </task>\n' +
-      '<context> Data the agent needs </context>\n' +
-      '<steps> Numbered goals with exact data to enter + verification after critical steps + error recovery </steps>\n' +
-      '<done> What success looks like </done>\n' +
-      '```\n\n' +
-      'Tell the agent WHAT to accomplish, not how to click. Include the real data. One prompt per task. Under 500 words each. Code blocks I can copy.'
-    )
+  const handleContinue = useCallback(() => {
+    sendMessage('Continue where you left off. Pick up exactly from where you stopped and keep going.')
   }, [sendMessage])
 
   const handleThinkForMe = useCallback(() => {
@@ -524,11 +514,11 @@ export default function App() {
                 >
                   <Robot size={17} />
                 </button>
-                {/* r-2: Make It Happen */}
+                {/* r-2: Continue */}
                 <button
                   className="stack-btn-r stack-btn-r-2 glass-surface"
-                  title="Make It Happen"
-                  onClick={handleMakeItHappen}
+                  title="Continue"
+                  onClick={handleContinue}
                   disabled={isRunning}
                 >
                   <Notepad size={17} />
