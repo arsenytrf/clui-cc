@@ -140,10 +140,8 @@ export default function App() {
 
   const handleBrainstorm = useCallback(() => {
     sendMessage(
-      'Let\'s brainstorm. Look at what we\'re building, think about where it could go, and ask me questions. ' +
-      'What\'s the vision I haven\'t told you yet? What problems am I probably running into? What would make this 10x better? ' +
-      'Don\'t just list ideas — have a conversation with me. Ask me what I think, challenge my assumptions, ' +
-      'and build on my answers. Let\'s think bigger together.'
+      'Let\'s brainstorm. Ask me questions — what\'s the vision I haven\'t told you yet? What problems am I probably running into? ' +
+      'What would make this 10x better? Challenge my assumptions and build on my answers. Don\'t list ideas — have a conversation with me.'
     )
   }, [sendMessage])
 
