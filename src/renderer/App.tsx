@@ -167,31 +167,20 @@ export default function App() {
 
   const handleAgentBlueprint = useCallback(() => {
     sendMessage(
-      'Read this project. Then build me browser agent prompts for Claude Computer Use.\n\n' +
-      'HOW TO THINK ABOUT THIS:\n' +
-      'Computer Use takes screenshots, reasons about what it sees, then acts. It\'s smart — it can figure out buttons and forms from screenshots. Your job is to tell it WHAT to accomplish and WHAT DATA to enter, not HOW to click things.\n\n' +
-      'STEP 1 — Read the project. Find every task that needs a browser:\n' +
-      'Check package.json, .env, config files, README, deployment configs. Look for references to external services — analytics, DNS, forms, search engines, CDN, email, social, APIs.\n\n' +
-      'STEP 2 — For each task, WebSearch the current procedure. UIs change. Find the real starting URL and current flow.\n\n' +
-      'STEP 3 — Write one prompt per task using this formula:\n\n' +
+      'Based on everything you know about this project, build me browser agent prompts for every task that needs a browser. WebSearch the current procedure for each one — UIs change, find the real URLs and flow.\n\n' +
+      'Write one prompt per task:\n' +
       '```\n' +
-      '<task> One sentence: what + where </task>\n' +
-      '<context> Business name, URLs, credentials, data the agent needs </context>\n' +
+      '<task> What + where </task>\n' +
+      '<context> Business info, URLs, data the agent needs </context>\n' +
       '<steps>\n' +
       '1. Go to [URL]\n' +
       '2. [What to accomplish] — enter "[exact text]"\n' +
       '3. Verify: you should see [what success looks like]\n' +
       '4. If [error/unexpected screen], then [recovery action]\n' +
-      '...\n' +
       '</steps>\n' +
-      '<done> What the screen looks like when finished </done>\n' +
+      '<done> What success looks like </done>\n' +
       '```\n\n' +
-      'WHAT MAKES A GOOD STEP:\n' +
-      '- Good: "Submit the sitemap URL https://example.com/sitemap.xml"\n' +
-      '- Bad: "Click the third button from the left"\n' +
-      '- Good: "Verify: you should see a green confirmation banner"\n' +
-      '- Bad: "It should work"\n\n' +
-      'RULES: One task per prompt. Under 500 words. Include real data — no blanks. Output in code blocks I can copy.'
+      'Tell the agent WHAT to accomplish, not how to click. Include real data — no blanks. One task per prompt. Under 500 words. Code blocks I can copy.'
     )
   }, [sendMessage])
 
@@ -201,23 +190,14 @@ export default function App() {
 
   const handleThinkForMe = useCallback(() => {
     sendMessage(
-      'Think for me. Follow this exact loop:\n\n' +
-      'STEP 1 — OBSERVE:\n' +
-      'Read package.json, the main source files, and any config. Identify: what is this project? Who uses it? What industry/niche is it in? What tech stack?\n\n' +
-      'STEP 2 — RESEARCH (be precise with queries):\n' +
-      'Based on what you found in Step 1, craft SPECIFIC search queries. Do NOT search generic terms.\n' +
-      '- Bad: "common website problems" / "user experience issues"\n' +
-      '- Good: "[exact product type] complaints reddit 2025" / "[exact industry] customers what they wish [product type] had"\n\n' +
-      'Search for:\n' +
-      'a) Real user pain points: "[project niche] frustrations reddit" / "[industry] customers what they want site:reddit.com"\n' +
-      'b) Feature ideas: "[closest competitor name] vs [alternative] features" / "best [product type] features 2026"\n' +
-      'c) Stack issues: "[exact framework + version] known issues" / "[exact library name] breaking changes 2026"\n\n' +
-      'STEP 3 — REASON:\n' +
-      'Connect what real users are saying to what this project is missing. What would make a user say "finally, someone gets it"?\n\n' +
-      'STEP 4 — ACT:\n' +
-      'Give me a prioritized list. For each item: what to do, why it matters (with evidence from your research), and effort level.\n' +
-      'If you can fix something right now, just do it.\n\n' +
-      'Don\'t ask me questions. Show your search queries and what you found.'
+      'Think for me. You already know this project — now go deeper.\n\n' +
+      'WebSearch with SPECIFIC queries based on what this project actually is:\n' +
+      '- "[exact niche] frustrations reddit 2025"\n' +
+      '- "[closest competitor] vs [alternative] features"\n' +
+      '- "[exact framework + version] known issues 2026"\n' +
+      'NOT generic stuff like "common website problems."\n\n' +
+      'Connect what real users are saying to what this project is missing. Give me a prioritized list — what to do, why (with evidence), and effort level. If you can fix something now, just do it.\n\n' +
+      'Show your search queries and what you found. Don\'t ask me questions.'
     )
   }, [sendMessage])
 
@@ -230,19 +210,9 @@ export default function App() {
 
   const handleLevelUpDesign = useCallback(() => {
     sendMessage(
-      'Look at this site\'s front-end design and make it better. Don\'t ask me what to improve — you\'re the designer.\n\n' +
-      '1. Open the site (run dev server or read the code). Look at every page with a designer\'s eye.\n' +
-      '2. WebSearch for award-winning sites in this same niche on Awwwards, Behance, or Dribbble. WebFetch 3-5 of them. Study what makes them feel premium.\n' +
-      '3. Compare our site to those. Be honest — where do we look generic, dated, or "AI-generated"?\n' +
-      '4. Fix it. Specifically look at:\n' +
-      '   - Typography: Is the font pairing bold enough? Are headlines big enough? Is there real contrast between display and body?\n' +
-      '   - Color: Are we using custom colors or safe defaults? Do we have enough full-color sections?\n' +
-      '   - Layout rhythm: Do sections feel varied or repetitive? Any card grids that should be something else?\n' +
-      '   - Spacing: Is it generous enough? Do sections breathe?\n' +
-      '   - Visual moments: Is there at least one "wow" section that stops you scrolling?\n' +
-      '   - Animations: Are scroll reveals and transitions enhancing or generic?\n' +
-      '   - Images: Are they high quality and specific to the business?\n\n' +
-      'Make the changes directly. Show me before/after for the biggest improvements.'
+      'You\'re the designer — make this site look better. Don\'t ask what to improve.\n\n' +
+      'WebSearch for award-winning sites in this niche on Awwwards or Behance. WebFetch 3-5 of them. Where do we look generic compared to those?\n\n' +
+      'Fix it — typography, color, layout rhythm, spacing, visual moments, animations, images. Make the changes directly. Show me before/after for the biggest improvements.'
     )
   }, [sendMessage])
 
@@ -259,34 +229,12 @@ export default function App() {
 
   const handleCleanHouse = useCallback(() => {
     sendMessage(
-      'Full codebase sweep. Work through each layer systematically:\n\n' +
-      'LAYER 1 — DEAD FILES:\n' +
-      'Read the entire project structure. For every source file, grep for its name/exports across the codebase.\n' +
-      'Find and remove:\n' +
-      '- Files from a previous framework (HTML in a Next.js project, old CSS in a Tailwind project, jQuery in a React project)\n' +
-      '- Components, pages, or utilities that nothing imports\n' +
-      '- Duplicate files (same component in two locations)\n' +
-      '- Empty files, placeholder files, temp files, .bak files\n\n' +
-      'LAYER 2 — DEAD CODE INSIDE FILES:\n' +
-      'For every remaining file, check for:\n' +
-      '- Unused imports (imported but never referenced in the file)\n' +
-      '- Unused variables, functions, and types that are defined but never called\n' +
-      '- Commented-out code blocks (if it\'s in git history, it doesn\'t need to be commented out)\n' +
-      '- console.log / console.debug statements left from debugging\n' +
-      '- TODO/FIXME comments that were already addressed\n' +
-      '- Unreachable code after return/throw statements\n\n' +
-      'LAYER 3 — DEAD DEPENDENCIES:\n' +
-      '- Read package.json. For each dependency, grep the src/ directory for its import. If nothing imports it, remove it.\n' +
-      '- Check for packages that could be replaced by native APIs (e.g., lodash for simple operations, moment.js when Intl.DateTimeFormat works)\n' +
-      '- Check for duplicate packages that do the same thing\n\n' +
-      'LAYER 4 — DEAD ASSETS:\n' +
-      '- Check every file in public/ and assets/. Grep for each filename across the codebase.\n' +
-      '- Remove images, fonts, and media files that no code references\n\n' +
-      'SAFETY RULES:\n' +
-      '- NEVER delete: .env files, .git, lock files, documentation (.md), config files that tools need\n' +
-      '- Remove in small batches — run the build after each batch to catch breakage early\n' +
-      '- If unsure whether something is used, grep for it first. If still unsure, leave it and flag it.\n\n' +
-      'Show me a summary: what you found, what you deleted, and what you flagged as "probably unused but verify."'
+      'Full sweep — find and remove everything that\'s dead:\n\n' +
+      'DEAD FILES: Old framework leftovers, orphaned components nothing imports, duplicates, empty/temp files. Grep each file\'s name before deleting.\n\n' +
+      'DEAD CODE: Unused imports, unused vars/functions, commented-out blocks, console.logs, stale TODOs, unreachable code.\n\n' +
+      'DEAD DEPS: Grep package.json deps against src/ — remove unimported ones. Flag packages replaceable by native APIs.\n\n' +
+      'DEAD ASSETS: Grep every file in public/ — remove unreferenced images/fonts.\n\n' +
+      'Never delete .env, .git, lock files, or configs. Remove in small batches, build between each. Show what you found, deleted, and flagged.'
     )
   }, [sendMessage])
 
