@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  Paperclip, GitCommit, HeadCircuit, MagnifyingGlass, Rocket, ThumbsUp, ListChecks, Lightbulb,
+  ArrowsClockwise, GitCommit, HeadCircuit, MagnifyingGlass, Rocket, ThumbsUp, ListChecks, Lightbulb,
   Robot, Notepad, Brain, Sparkle, PaintBrush, GraduationCap, Broom, RocketLaunch,
 } from '@phosphor-icons/react'
 import { TabStrip } from './components/TabStrip'
@@ -140,8 +140,8 @@ export default function App() {
 
   const handleBrainstorm = useCallback(() => {
     sendMessage(
-      'Let\'s brainstorm. Ask me questions — what\'s the vision I haven\'t told you yet? What problems am I probably running into? ' +
-      'What would make this 10x better? Challenge my assumptions and build on my answers. Don\'t list ideas — have a conversation with me.'
+      'What are we missing? What should we do next? Give me your honest recommendations — features, fixes, improvements, things I haven\'t thought of. ' +
+      'Prioritize by impact. Don\'t ask me questions — just tell me what you\'d do.'
     )
   }, [sendMessage])
 
@@ -256,11 +256,13 @@ export default function App() {
     )
   }, [sendMessage])
 
-  const handleAttachFile = useCallback(async () => {
-    const files = await window.clui.attachFiles()
-    if (!files || files.length === 0) return
-    addAttachments(files)
-  }, [addAttachments])
+  const handleSpinUpTeam = useCallback(() => {
+    sendMessage(
+      'Create an agent team for this project. Based on what needs to be done, decide the right number of teammates and what each one should focus on. ' +
+      'Give each teammate a clear, independent scope so they don\'t step on each other\'s files. ' +
+      'Spawn them and coordinate the work. I\'ll check in when you\'re done.'
+    )
+  }, [sendMessage])
 
   return (
     <PopoverLayerProvider>
@@ -388,14 +390,14 @@ export default function App() {
                 >
                   <GitCommit size={17} />
                 </button>
-                {/* btn-4: Attach */}
+                {/* btn-4: Spin Up Team */}
                 <button
                   className="stack-btn stack-btn-4 glass-surface"
-                  title="Attach file"
-                  onClick={handleAttachFile}
+                  title="Spin Up Team"
+                  onClick={handleSpinUpTeam}
                   disabled={isRunning}
                 >
-                  <Paperclip size={17} />
+                  <ArrowsClockwise size={17} />
                 </button>
                 {/* btn-5: Brainstorm */}
                 <button
