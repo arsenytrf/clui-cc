@@ -178,7 +178,7 @@ export default function App() {
       '</steps>\n' +
       '<done> What success looks like </done>\n' +
       '```\n\n' +
-      'Tell the agent WHAT to accomplish, not how to click. Include real data — no blanks. One task per prompt. Under 500 words. Code blocks I can copy.'
+      'Tell the agent WHAT to accomplish, not how to click. Include real data — no blanks. One prompt per task. Code blocks I can copy.'
     )
   }, [sendMessage])
 
